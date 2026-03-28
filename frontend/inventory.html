@@ -10,12 +10,9 @@
    LogiTwin — Global Styles (Light Theme + Custom Fonts)
    ============================================================ */
 
-*, *::before, *::after {
-  margin: 0; padding: 0; box-sizing: border-box;
-}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  /* Set default small text to Lucida Bright */
   font-family: "Lucida Bright", Georgia, serif; 
   color: #1e293b;
   display: flex;
@@ -27,7 +24,6 @@ body {
     #f8fafc;
 }
 
-/* Set headings, bold letters, and buttons to Cambria */
 h1, h2, h3, h4, h5, h6, b, strong, button, th,
 .logo, .topbar h1, .sim-title, .card-title, .label, .value,
 nav a, .filter-tab, .inv-badge, .badge, .live-badge, .inv-name {
@@ -35,310 +31,92 @@ nav a, .filter-tab, .inv-badge, .badge, .live-badge, .inv-name {
 }
 
 body::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image:
-    linear-gradient(#cbd5e166 1px, transparent 1px),
-    linear-gradient(90deg, #cbd5e166 1px, transparent 1px);
-  background-size: 60px 60px;
-  z-index: -1;
+  content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background-image: linear-gradient(#cbd5e166 1px, transparent 1px), linear-gradient(90deg, #cbd5e166 1px, transparent 1px);
+  background-size: 60px 60px; z-index: -1;
 }
 
-/* ── SIDEBAR ─────────────────────────────────────────────── */
-.sidebar {
-  width: 220px;
-  min-height: 100vh;
-  background: #ffffff;
-  border-right: 1px solid #e2e8f0;
-  display: flex;
-  flex-direction: column;
-  padding: 24px 16px;
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  box-shadow: 4px 0 20px rgba(99, 102, 241, 0.05);
-}
-
-.logo {
-  font-size: 26px;
-  font-weight: 900;
-  color: #1e293b;
-  margin-bottom: 36px;
-  letter-spacing: 1px;
-}
-.logo span {
-  background: linear-gradient(90deg, #a855f7, #6366f1);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
+.sidebar { width: 220px; min-height: 100vh; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 24px 16px; position: fixed; top: 0; left: 0; bottom: 0; box-shadow: 4px 0 20px rgba(99, 102, 241, 0.05); }
+.logo { font-size: 26px; font-weight: 900; color: #1e293b; margin-bottom: 36px; letter-spacing: 1px; }
+.logo span { background: linear-gradient(90deg, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 nav { display: flex; flex-direction: column; gap: 8px; }
-nav a {
-  text-decoration: none;
-  color: #64748b;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  transition: 0.2s;
-}
-nav a:hover, nav a.active {
-  background: #eef2ff;
-  color: #4f46e5;
-  font-weight: 700;
-}
-
-.sim-panel {
-  margin-top: auto;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 14px;
-}
+nav a { text-decoration: none; color: #64748b; padding: 10px 14px; border-radius: 8px; font-size: 15px; font-weight: 600; transition: 0.2s; }
+nav a:hover, nav a.active { background: #eef2ff; color: #4f46e5; font-weight: 700; }
+.sim-panel { margin-top: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; }
 .sim-title { font-size: 14px; font-weight: 700; color: #4f46e5; margin-bottom: 6px; }
 
-/* ── MAIN CONTENT ────────────────────────────────────────── */
-.main {
-  margin-left: 220px;
-  flex: 1;
-  padding: 24px 32px;
-}
-
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-}
+.main { margin-left: 220px; flex: 1; padding: 24px 32px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
 .topbar h1 { font-size: 26px; font-weight: 800; color: #0f172a; }
-
-.live-badge {
-  background: #dcfce7;
-  color: #16a34a;
-  border: 1px solid #bbf7d0;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 700;
-  animation: pulse 2s infinite;
-  letter-spacing: 0.5px;
-}
+.live-badge { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; animation: pulse 2s infinite; letter-spacing: 0.5px; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
-.card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 24px;
-  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05);
-}
-.card-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #475569;
-  margin-bottom: 16px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+.card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05); }
+.card-title { font-size: 15px; font-weight: 700; color: #475569; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* ============================================================
-   LogiTwin — Inventory Page Specific
-   ============================================================ */
-.inv-header-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
+.inv-header-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .inv-filter-tabs { display: flex; gap: 8px; }
-
-.filter-tab {
-  padding: 6px 16px;
-  border-radius: 20px;
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: .2s;
-  text-transform: uppercase;
-  letter-spacing: .5px;
-}
+.filter-tab { padding: 6px 16px; border-radius: 20px; border: 1px solid #cbd5e1; background: #ffffff; color: #64748b; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s; text-transform: uppercase; letter-spacing: .5px; }
 .filter-tab:hover { border-color: #818cf8; color: #4f46e5; }
 .filter-tab.active { background: #6366f1; border-color: #6366f1; color: #ffffff; }
 .filter-tab.active.warn { background: #f97316; border-color: #f97316; color: #ffffff; }
 .filter-tab.active.crit { background: #ef4444; border-color: #ef4444; color: #ffffff; }
 
-.inv-summary-strip {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.inv-summary-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05);
-}
+.inv-summary-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+.inv-summary-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05); }
 .inv-summary-card .icon { font-size: 28px; }
 .inv-summary-card .label { font-size: 13px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: .5px; }
 .inv-summary-card .value { font-size: 30px; font-weight: 800; color: #6366f1; }
 .inv-summary-card.warn .value { color: #ea580c; }
 .inv-summary-card.crit .value { color: #dc2626; }
 
-.inventory-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.inv-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 22px;
-  transition: transform .2s, border-color .2s, box-shadow .2s;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05);
-}
-.inv-card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 4px;
-  background: #6366f1;
-}
+.inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+.inv-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 22px; transition: transform .2s, border-color .2s, box-shadow .2s; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05); }
+.inv-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: #6366f1; }
 .inv-card.status-critical::before { background: #ef4444; }
 .inv-card.status-low::before      { background: #f97316; }
 .inv-card.status-ok::before       { background: #10b981; }
-
 .inv-card:hover { transform: translateY(-3px); border-color: #a5b4fc; box-shadow: 0 15px 40px rgba(99, 102, 241, 0.1); }
 .inv-card.status-critical { border-color: #fecaca; }
 .inv-card.status-low      { border-color: #fed7aa; }
 
-.inv-node-id {
-  font-size: 11px;
-  color: #64748b;
-  font-family: monospace;
-  font-weight: 600;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-}
-
+.inv-node-id { font-size: 11px; color: #64748b; font-family: monospace; font-weight: 600; letter-spacing: 1px; margin-bottom: 4px; }
 .inv-name  { font-size: 20px; font-weight: 800; margin-bottom: 12px; color: #0f172a; }
 .inv-stock { font-size: 32px; font-weight: 800; color: #6366f1; line-height: 1; font-family: Cambria, serif; }
 .inv-stock span { font-size: 14px; color: #94a3b8; font-weight: 500; font-family: "Lucida Bright", serif; }
 
-.inv-bar-wrap {
-  height: 8px;
-  background: #f1f5f9;
-  border-radius: 6px;
-  margin: 16px 0 8px;
-  overflow: hidden;
-}
-
-.inv-bar-fill {
-  height: 100%;
-  border-radius: 6px;
-  transition: width 0.6s ease;
-}
+.inv-bar-wrap { height: 8px; background: #f1f5f9; border-radius: 6px; margin: 16px 0 8px; overflow: hidden; }
+.inv-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; }
 .status-ok       .inv-bar-fill { background: linear-gradient(90deg, #34d399, #10b981); }
 .status-low      .inv-bar-fill { background: linear-gradient(90deg, #fb923c, #f97316); }
 .status-critical .inv-bar-fill { background: linear-gradient(90deg, #f87171, #ef4444); }
 
-.inv-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 10px;
-}
+.inv-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
 .inv-pct   { font-size: 12px; color: #64748b; font-weight: 600; }
 .inv-badge { font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 12px; display: inline-block; letter-spacing: 0.5px;}
 .inv-badge.ok       { background: #dcfce7; color: #16a34a; }
 .inv-badge.low      { background: #ffedd5; color: #ea580c; }
 .inv-badge.critical { background: #fee2e2; color: #dc2626; }
-
-.inv-trend {
-  font-size: 12px;
-  font-weight: 600;
-  margin-top: 8px;
-}
+.inv-trend { font-size: 12px; font-weight: 600; margin-top: 8px; }
 .inv-trend.down { color: #f97316; }
 .inv-trend.up   { color: #10b981; }
 
-/* ── TABLE ───────────────────────────────────────────────── */
-.inv-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-.inv-table th {
-  text-align: left;
-  padding: 14px;
-  color: #64748b;
-  border-bottom: 2px solid #e2e8f0;
-  font-size: 12px;
-  text-transform: uppercase;
-  font-weight: 700;
-  letter-spacing: .5px;
-}
-.inv-table td {
-  padding: 16px 14px;
-  border-bottom: 1px solid #f1f5f9;
-  color: #334155;
-  font-weight: 500;
-}
+.inv-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.inv-table th { text-align: left; padding: 14px; color: #64748b; border-bottom: 2px solid #e2e8f0; font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: .5px; }
+.inv-table td { padding: 16px 14px; border-bottom: 1px solid #f1f5f9; color: #334155; font-weight: 500; }
 .inv-table tr:hover td { background: #f8fafc; }
 
-.progress-mini {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.progress-mini-bar {
-  flex: 1;
-  height: 6px;
-  background: #e2e8f0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-.progress-mini-fill {
-  height: 100%;
-  border-radius: 4px;
-  background: linear-gradient(90deg, #a855f7, #6366f1);
-}
+.progress-mini { display: flex; align-items: center; gap: 12px; }
+.progress-mini-bar { flex: 1; height: 6px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+.progress-mini-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #a855f7, #6366f1); transition: width 0.3s;}
 .progress-mini-fill.warn { background: linear-gradient(90deg, #fb923c, #f97316); }
 .progress-mini-fill.crit { background: linear-gradient(90deg, #f87171, #ef4444); }
 
-.badge {
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
+.badge { padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 .badge.ok       { background: #dcfce7; color: #16a34a; }
 .badge.low      { background: #ffedd5; color: #ea580c; }
 .badge.critical { background: #fee2e2; color: #dc2626; }
-
-.empty-filter {
-  text-align: center;
-  padding: 40px;
-  color: #64748b;
-  font-size: 14px;
-  font-weight: 600;
-}
+.empty-filter { text-align: center; padding: 40px; color: #64748b; font-size: 14px; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -346,8 +124,10 @@ nav a:hover, nav a.active {
 <div class="sidebar">
   <div class="logo">Logi<span>Twin</span></div>
   <nav>
-    <a href="dashboard.html">📊 Dashboard</a>
-    <a href="inventory.html" class="active">📦 Inventory</a>
+    <a href="dashboard.html">📊 Dashboard / Sim</a>
+    <a href="inventory.html" class="active">📦 Inventory Levels</a>
+    <a href="vehicles.html">🚚 Active Vehicles</a>
+    <a href="alerts.html">🔔 System Alerts</a>
     <a href="index.html">🚪 Logout</a>
   </nav>
   <div class="sim-panel" style="margin-top:auto;">
@@ -372,24 +152,15 @@ nav a:hover, nav a.active {
   <div class="inv-summary-strip">
     <div class="inv-summary-card">
       <div class="icon">📦</div>
-      <div>
-        <div class="label">Total Nodes</div>
-        <div class="value" id="sum-total">—</div>
-      </div>
+      <div><div class="label">Total Nodes</div><div class="value" id="sum-total">—</div></div>
     </div>
     <div class="inv-summary-card warn">
       <div class="icon">⚠️</div>
-      <div>
-        <div class="label">Low / Critical</div>
-        <div class="value" id="sum-warn">—</div>
-      </div>
+      <div><div class="label">Low / Critical</div><div class="value" id="sum-warn">—</div></div>
     </div>
     <div class="inv-summary-card">
       <div class="icon">📈</div>
-      <div>
-        <div class="label">Avg. Fill Rate</div>
-        <div class="value" id="sum-avg">—</div>
-      </div>
+      <div><div class="label">Avg. Fill Rate</div><div class="value" id="sum-avg">—</div></div>
     </div>
   </div>
 
@@ -405,19 +176,17 @@ nav a:hover, nav a.active {
 
   <div id="inventory-grid" class="inventory-grid"></div>
 
-  <div class="card" style="margin-top:20px; margin-bottom:24px;">
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-title">📊 Stock Levels vs Capacity</div>
+    <div style="height: 280px; position: relative;">
+      <canvas id="invBarChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
     <div class="card-title">📋 Inventory Detail</div>
     <table class="inv-table">
-      <thead>
-        <tr>
-          <th>Node ID</th>
-          <th>Warehouse</th>
-          <th>Stock</th>
-          <th>Capacity</th>
-          <th>Fill Rate</th>
-          <th>Status</th>
-        </tr>
-      </thead>
+      <thead><tr><th>Node ID</th><th>Warehouse</th><th>Stock</th><th>Capacity</th><th>Fill Rate</th><th>Status</th></tr></thead>
       <tbody id="inv-table-body"></tbody>
     </table>
   </div>
@@ -425,17 +194,14 @@ nav a:hover, nav a.active {
 </div>
 
 <script>
-/*
-// CHANGE THIS:
-const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-    ? "http://localhost:8080" 
-    : "https://logitwin-api.onrender.com"; 
-*/
-
 // TO THIS (Using your actual copied Render link):
 const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://localhost:8080" 
     : "https://logitwin-api.onrender.com"; // <-- Paste your real Render link here! (No slash at the end)
+
+// ⚠️ CHART INSTANCE AND FONTS
+Chart.defaults.font.family = '"Cambria", Georgia, serif';
+let invBarChartInstance = null;
 
 let allInventory = [];
 let currentFilter = "all";
@@ -458,7 +224,6 @@ async function refreshInventory() {
     const response = await fetch(`${API_BASE}/inventory`);
     allInventory = await response.json();
 
-    // Calculate Summary stats
     const total   = allInventory.length;
     const warning = allInventory.filter(i => i.status === "low" || i.status === "critical").length;
     const avgFill = allInventory.reduce((s, i) => s + i.pct, 0) / total;
@@ -470,6 +235,9 @@ async function refreshInventory() {
 
     renderGrid(allInventory);
     renderTable(allInventory);
+    
+    // ⚠️ ADDED CHART CALL
+    updateChart(allInventory);
 
   } catch (error) {
     console.error("Failed to fetch inventory from Go backend:", error);
@@ -477,16 +245,49 @@ async function refreshInventory() {
   }
 }
 
-function renderGrid(inventory) {
-  const filtered = currentFilter === "all"
-    ? inventory
-    : inventory.filter(i => i.status === currentFilter);
+// ⚠️ ADDED CHART CREATION FUNCTION
+function updateChart(inventory) {
+  const ctx = document.getElementById('invBarChart').getContext('2d');
+  
+  const labels = inventory.map(item => item.name);
+  const stockData = inventory.map(item => item.stock);
+  const remainingCapData = inventory.map(item => item.capacity - item.stock);
 
+  if (invBarChartInstance) {
+    invBarChartInstance.data.labels = labels;
+    invBarChartInstance.data.datasets[0].data = stockData;
+    invBarChartInstance.data.datasets[1].data = remainingCapData;
+    invBarChartInstance.update();
+    return;
+  }
+
+  invBarChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'Current Stock', data: stockData, backgroundColor: '#6366f1', borderRadius: 4 },
+        { label: 'Empty Capacity', data: remainingCapData, backgroundColor: '#e2e8f0', borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { font: { weight: 'bold' } } },
+        y: { stacked: true, border: { display: false } }
+      },
+      plugins: { legend: { position: 'top', labels: { font: { weight: 'bold' } } }, tooltip: { mode: 'index', intersect: false } },
+      animation: { duration: 500 }
+    }
+  });
+}
+
+function renderGrid(inventory) {
+  const filtered = currentFilter === "all" ? inventory : inventory.filter(i => i.status === currentFilter);
   const grid = document.getElementById("inventory-grid");
 
   if (filtered.length === 0) {
-    grid.innerHTML = `<div class="empty-filter" style="grid-column:1/-1;">
-      No nodes with status "${currentFilter}" found.</div>`;
+    grid.innerHTML = `<div class="empty-filter" style="grid-column:1/-1;">No nodes with status "${currentFilter}" found.</div>`;
     return;
   }
 
@@ -533,7 +334,6 @@ function renderTable(inventory) {
   `}).join("");
 }
 
-// Start the real-time loop!
 refreshInventory();
 setInterval(refreshInventory, 3000);
 </script>
