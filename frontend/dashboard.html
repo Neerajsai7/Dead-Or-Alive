@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LogiTwin — Dashboard</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <style>
 /* ============================================================
    LogiTwin — Global Styles (Light Theme)
@@ -18,7 +22,7 @@ body {
   color: #1e293b;
   display: flex;
   min-height: 100vh;
-  /* Matching the light gradient background */
+  /* Light gradient background */
   background:
     radial-gradient(circle at 15% 25%, #60a5fa40, transparent 45%),
     radial-gradient(circle at 85% 70%, #a78bfa40, transparent 45%),
@@ -50,6 +54,7 @@ body::before {
   position: fixed;
   top: 0; left: 0; bottom: 0;
   box-shadow: 4px 0 20px rgba(99, 102, 241, 0.05);
+  z-index: 1000;
 }
 
 .logo {
@@ -61,7 +66,6 @@ body::before {
 }
 
 .logo span {
-  /* Matching the purple gradient from the button */
   background: linear-gradient(90deg, #a855f7, #6366f1);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -222,23 +226,21 @@ nav a:hover, nav a.active {
   margin-bottom: 24px;
 }
 
-.map-card #map {
-  height: 360px;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #94a3b8;
-  font-weight: 600;
+.map-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.map-card .card-title { padding: 20px 20px 0 20px; margin-bottom: 10px; }
+
+#map {
+  flex: 1;
+  min-height: 400px;
+  width: 100%;
+  background: #e2e8f0;
+  z-index: 1;
 }
 
 /* ── EVENTS ──────────────────────────────────────────────── */
 .events-card {
   overflow-y: auto;
-  max-height: 420px;
+  max-height: 460px;
 }
 
 .event-item {
@@ -279,8 +281,10 @@ nav a:hover, nav a.active {
     <div class="logo">Logi<span>Twin</span></div>
     
     <nav>
-      <a href="dashboard.html" class="active">📊 Dashboard</a>
+      <a href="dashboard.html" class="active">📊 Dashboard / Simulator</a>
       <a href="inventory.html">📦 Inventory Levels</a>
+      <a href="vehicles.html">🚚 Active Vehicles</a>
+      <a href="alerts.html">🔔 System Alerts</a>
       <a href="index.html">🚪 Logout</a>
     </nav>
 
@@ -291,8 +295,8 @@ nav a:hover, nav a.active {
         <option value="N002">Delhi Center</option>
         <option value="N001">Mumbai Hub</option>
       </select>
-      <button class="btn-disrupt">🔴 Disrupt Node</button>
-      <button class="btn-clear">✅ Clear Status</button>
+      <button class="btn-disrupt" onclick="triggerDisruption()">🔴 Disrupt Node</button>
+      <button class="btn-clear" onclick="clearDisruption()">✅ Clear Status</button>
     </div>
   </div>
 
@@ -306,19 +310,19 @@ nav a:hover, nav a.active {
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-label">Active Vehicles</div>
-        <div class="kpi-value" id="kpi-vehicles">12</div>
+        <div class="kpi-value" id="kpi-vehicles">—</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">On-Time Rate</div>
-        <div class="kpi-value" id="kpi-ontime">94.2%</div>
+        <div class="kpi-value" id="kpi-ontime">—</div>
       </div>
-      <div class="kpi-card warn">
+      <div class="kpi-card" id="card-disrupt">
         <div class="kpi-label">Disruptions</div>
-        <div class="kpi-value" id="kpi-disruptions">1</div>
+        <div class="kpi-value" id="kpi-disruptions">—</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">Inventory Health</div>
-        <div class="kpi-value" id="kpi-health">78%</div>
+        <div class="kpi-value" id="kpi-health">—</div>
       </div>
     </div>
 
@@ -326,38 +330,189 @@ nav a:hover, nav a.active {
       
       <div class="card map-card">
         <div class="card-title">🗺️ Live Supply Chain Map</div>
-        <div id="map">
-          [ Map Rendering Area ]
-        </div>
+        <div id="map"></div>
       </div>
 
       <div class="card events-card">
         <div class="card-title">🔔 Event Log</div>
-        
         <div id="events-list">
-          <div class="event-item sev-high">
-            <span class="event-time">09:12</span>
-            <span class="event-badge disruption">Disruption</span>
-            <span class="event-msg">Chennai Port route disrupted due to weather</span>
-          </div>
-          
-          <div class="event-item sev-medium">
-            <span class="event-time">08:45</span>
-            <span class="event-badge alert">Alert</span>
-            <span class="event-msg">Stock running low at Delhi Center</span>
-          </div>
-
-          <div class="event-item sev-low">
-            <span class="event-time">08:30</span>
-            <span class="event-badge info">Info</span>
-            <span class="event-msg">TRK-101 departed Mumbai Hub on schedule</span>
-          </div>
+          <div style="padding:20px; color:#94a3b8; font-size:13px; text-align:center;">Loading events...</div>
         </div>
-        
       </div>
     </div>
 
   </div>
 
+<script>
+const API_BASE = "http://localhost:8080";
+
+// 1. Initialize Leaflet Map (Centered on India)
+const map = L.map('map').setView([20.5937, 78.9629], 5);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO'
+}).addTo(map);
+
+// Layers to hold map items so we can clear them easily on every tick
+let nodesLayer = L.layerGroup().addTo(map);
+let routesLayer = L.layerGroup().addTo(map);
+let vehiclesLayer = L.layerGroup().addTo(map);
+
+// Fetch all data and update UI
+async function updateDashboard() {
+    try {
+        // Fetch all endpoints simultaneously for speed
+        const [healthRes, eventsRes, nodesRes, routesRes, vehiclesRes] = await Promise.all([
+            fetch(`${API_BASE}/health`),
+            fetch(`${API_BASE}/events`),
+            fetch(`${API_BASE}/nodes`),
+            fetch(`${API_BASE}/routes`),
+            fetch(`${API_BASE}/vehicles`)
+        ]);
+
+        const health = await healthRes.json();
+        const events = await eventsRes.json();
+        const nodes = await nodesRes.json();
+        const routes = await routesRes.json();
+        const vehicles = await vehiclesRes.json();
+
+        updateKPIs(health);
+        updateEvents(events);
+        updateMap(nodes, routes, vehicles);
+
+    } catch (error) {
+        console.error("Error fetching data from Go backend:", error);
+    }
+}
+
+function updateKPIs(health) {
+    document.getElementById('kpi-vehicles').textContent = health.activeVehicles;
+    document.getElementById('kpi-ontime').textContent = health.onTimeRate.toFixed(1) + '%';
+    document.getElementById('kpi-disruptions').textContent = health.disruptions;
+    document.getElementById('kpi-health').textContent = health.inventoryHealth.toFixed(1) + '%';
+
+    const disruptCard = document.getElementById('card-disrupt');
+    if (health.disruptions > 0) {
+        disruptCard.classList.add('warn');
+    } else {
+        disruptCard.classList.remove('warn');
+    }
+}
+
+function updateEvents(events) {
+    const list = document.getElementById('events-list');
+    list.innerHTML = events.map(e => {
+        // Map backend severity to our CSS classes
+        let sevClass = "sev-low";
+        let badgeClass = "info";
+        
+        if (e.severity === "high" || e.type === "disruption") { sevClass = "sev-high"; badgeClass = "disruption"; }
+        else if (e.severity === "medium" || e.type === "alert") { sevClass = "sev-medium"; badgeClass = "alert"; }
+
+        return `
+        <div class="event-item ${sevClass}">
+            <span class="event-time">${e.time}</span>
+            <span class="event-badge ${badgeClass}">${e.type}</span>
+            <span class="event-msg">${e.message}</span>
+        </div>`;
+    }).join('');
+}
+
+function updateMap(nodes, routes, vehicles) {
+    // Clear old drawings
+    nodesLayer.clearLayers();
+    routesLayer.clearLayers();
+    vehiclesLayer.clearLayers();
+
+    // Create a dictionary of nodes so we can easily look up coordinates for drawing routes
+    const nodeDict = {};
+
+    // Draw Nodes (Warehouses, Depots, Hubs)
+    nodes.forEach(n => {
+        nodeDict[n.id] = [n.lat, n.lng];
+        
+        let color = "#4f46e5"; // Default Purple
+        let radius = 8;
+        
+        if (n.status === "disrupted") {
+            color = "#ef4444"; // Red
+            radius = 12; // Make it bigger so it's obvious
+        }
+
+        L.circleMarker([n.lat, n.lng], {
+            color: color,
+            fillColor: color,
+            fillOpacity: 0.8,
+            radius: radius
+        }).bindPopup(`<b>${n.name}</b><br>Type: ${n.type}<br>Status: ${n.status}`).addTo(nodesLayer);
+    });
+
+    // Draw Routes (Connecting lines)
+    routes.forEach(r => {
+        const startPos = nodeDict[r.from];
+        const endPos = nodeDict[r.to];
+        
+        if (startPos && endPos) {
+            let lineColor = "#cbd5e1"; // Light gray for normal routes
+            let weight = 2;
+            let dashArray = "5, 5"; // Dashed line
+
+            if (r.status === "disrupted") {
+                lineColor = "#ef4444"; // Red for disrupted routes
+                weight = 3;
+                dashArray = null; // Solid line
+            }
+
+            L.polyline([startPos, endPos], {
+                color: lineColor,
+                weight: weight,
+                dashArray: dashArray
+            }).addTo(routesLayer);
+        }
+    });
+
+    // Draw Vehicles (Trucks & Planes moving along routes)
+    vehicles.forEach(v => {
+        if (v.status !== "idle") {
+            let vColor = "#10b981"; // Green for on-time
+            if (v.status === "delayed") vColor = "#f97316"; // Orange for delayed
+            
+            // Create a small colored dot for the vehicle
+            L.circleMarker([v.lat, v.lng], {
+                color: '#ffffff',
+                weight: 2,
+                fillColor: vColor,
+                fillOpacity: 1,
+                radius: 6
+            }).bindPopup(`<b>Vehicle ${v.id}</b><br>Status: ${v.status}<br>ETA: ${v.eta}`).addTo(vehiclesLayer);
+        }
+    });
+}
+
+// ── Disruption Button Controls ─────────────────────────────
+async function triggerDisruption() {
+    const nodeId = document.getElementById('disrupt-node').value;
+    await fetch(`${API_BASE}/disrupt`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ node_id: nodeId })
+    });
+    updateDashboard(); // Force an immediate refresh
+}
+
+async function clearDisruption() {
+    const nodeId = document.getElementById('disrupt-node').value;
+    await fetch(`${API_BASE}/disrupt/clear`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ node_id: nodeId })
+    });
+    updateDashboard(); // Force an immediate refresh
+}
+
+// Start the loop! Fetch data every 3 seconds
+updateDashboard();
+setInterval(updateDashboard, 3000);
+
+</script>
 </body>
 </html>
