@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LogiTwin — Login</title>
+<style>
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 25%, #60a5fa80, transparent 45%),
+    radial-gradient(circle at 85% 70%, #a78bfa80, transparent 45%),
+    radial-gradient(circle at 50% 80%, #38bdf880, transparent 40%),
+    #f1f5f9;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  width: 100%; height: 100%;
+  background-image:
+    linear-gradient(#cbd5e155 1px, transparent 1px),
+    linear-gradient(90deg, #cbd5e155 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: .35;
+}
+
+/* ── BRAND LOGO & TITLE ──────────────────────────────────── */
+.logoImg {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 180px;
+  z-index: 2;
+}
+
+.bigTitle {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 110px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  background: linear-gradient(90deg, #a855f7, #c084fc, #9333ea, #7e22ce);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+/* ── ANIMATIONS ──────────────────────────────────────────── */
+@keyframes moveLogoLeft {
+  to {
+    top: 42px;
+    left: calc(50% - 145px); 
+    transform: translate(-50%, 0);
+    height: 54px;
+  }
+}
+
+@keyframes moveTitleTop {
+  to {
+    top: 42px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    font-size: 42px;
+  }
+}
+
+.logoShift { animation: moveLogoLeft 0.8s ease forwards; }
+.titleShift { animation: moveTitleTop 0.8s ease forwards; }
+
+/* ── TAGLINE ─────────────────────────────────────────────── */
+.tagline {
+  position: absolute;
+  top: 58%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  font-size: 22px;
+  font-weight: 500;
+  color: #64748b;
+  opacity: 0;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+@keyframes fadeTagline {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+.taglineShow { animation: fadeTagline 0.8s ease forwards; }
+
+/* ── ROADS ───────────────────────────────────────────────── */
+.road {
+  position: absolute;
+  width: 100%; height: 100px;
+  background: #0f172a;
+  border-top: 5px solid #e2e8f0;
+  border-bottom: 5px solid #e2e8f0;
+  display: flex; align-items: center;
+  transition: .6s;
+  z-index: 1;
+}
+.roadTop    { top: 28%; }
+.roadBottom { top: 58%; }
+
+.road::before {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 50%;
+  height: 6px;
+  background: repeating-linear-gradient(
+    to right, white 0px, white 60px, transparent 60px, transparent 120px
+  );
+  transform: translateY(-50%);
+}
+
+.hideRoad { opacity: 0; pointer-events: none; }
+
+/* ── TRUCK ANIMATIONS ────────────────────────────────────── */
+.truck { position: absolute; top: 47%; width: 260px; transform: translateY(-50%); }
+
+.truckBottom { left: -300px; animation: drive 3s linear forwards; }
+.truckTop    { right: -300px; animation: driveReverse 3s linear forwards; }
+
+@keyframes drive        { 0%{ left:-300px; } 100%{ left:110%; } }
+@keyframes driveReverse { 0%{ right:-300px; } 100%{ right:110%; } }
+
+/* ── LOGIN PANEL ─────────────────────────────────────────── */
+.login {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(.2);
+  width: 860px;
+  background: white;
+  border-radius: 20px;
+  display: flex;
+  opacity: 0;
+  animation: showPanel .6s forwards;
+  animation-delay: 3.6s;
+  box-shadow: 0 30px 80px rgba(99, 102, 241, 0.18), 0 8px 32px rgba(0,0,0,0.12);
+  overflow: hidden;
+  z-index: 10;
+}
+
+@keyframes showPanel {
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ── LEFT PANEL ──────────────────────────────────────────── */
+.left {
+  width: 48%;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+  text-align: center;
+  padding: 44px 32px;
+  transition: transform .5s ease;
+}
+
+/* ── CAT WRAPPER (Anti-Flicker) ─────────────────────────── */
+.cat-wrapper {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.9), 0 0 15px rgba(56, 189, 248, 0.7), 0 0 35px rgba(139, 92, 246, 0.6);
+  background-color: transparent;
+}
+.cat-wrapper img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  opacity: 0; /* All frames invisible by default */
+}
+.cat-wrapper img.active {
+  opacity: 1; /* Only show the active frame */
+}
+
+/* ── TEXT ────────────────────────────────────────────────── */
+.startText span {
+  opacity: 0;
+  display: inline-block;
+  font-size: 26px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #60a5fa, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subStart span {
+  opacity: 0;
+  display: inline-block;
+  font-size: 15px;
+  color: #475569;
+}
+
+.animateText span { animation: wordFade .4s ease forwards; animation-delay: calc(var(--i) * .16s); }
+.animateSub  span { animation: wordFade .4s ease forwards; animation-delay: calc(var(--i) * .16s); }
+
+@keyframes wordFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── RIGHT PANEL (Forms) ─────────────────────────────────── */
+.right {
+  width: 52%;
+  padding: 52px 44px;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  background: #fff;
+}
+
+.right h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.right .subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 28px;
+}
+
+.form-group { margin-bottom: 16px; }
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1e293b;
+  transition: border-color .2s, box-shadow .2s;
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 3px rgba(129,140,248,.15);
+}
+
+.forgot-link {
+  display: block;
+  text-align: right;
+  font-size: 12px;
+  color: #6366f1;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: -8px;
+  margin-bottom: 20px;
+}
+.forgot-link:hover { text-decoration: underline; }
+
+.btn-main {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity .2s, transform .15s;
+  letter-spacing: .5px;
+}
+.btn-main:hover { opacity: .9; transform: translateY(-1px); }
+.btn-main:active { transform: translateY(0); }
+
+.switch-text {
+  margin-top: 18px;
+  font-size: 13px;
+  color: #64748b;
+  text-align: center;
+}
+.switch-text span {
+  color: #6366f1;
+  font-weight: 700;
+  cursor: pointer;
+}
+.switch-text span:hover { text-decoration: underline; }
+
+/* ── MESSAGE FLASH ───────────────────────────────────────── */
+.flash {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 14px;
+  display: none;
+}
+.flash.error   { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.flash.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+.flash.show    { display: block; }
+
+/* ── OTP STEP ────────────────────────────────────────────── */
+.otp-inputs {
+  display: flex; gap: 10px;
+  justify-content: center;
+  margin: 16px 0;
+}
+.otp-inputs input {
+  width: 48px; height: 52px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #1e293b;
+  outline: none;
+  transition: border-color .2s;
+}
+.otp-inputs input:focus { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129,140,248,.15); }
+
+/* ── PANEL SLIDE (Signup mode) ───────────────────────────── */
+.signupMode .left  { transform: translateX(100%); }
+.signupMode .right { transform: translateX(-100%); }
+
+</style>
+</head>
+<body>
+
+<img src="logo.png" class="logoImg" id="mainLogo">
+<div class="bigTitle" id="mainTitle">LogiTwin</div>
+<div class="tagline" id="tagline">Move Smarter, Ship Faster.</div>
+
+<div class="road roadTop">
+  <img src="truck2.png" class="truck truckTop">
+</div>
+<div class="road roadBottom">
+  <img src="truck.png" class="truck truckBottom">
+</div>
+
+<div class="login" id="loginBox">
+
+  <div class="left" id="leftPanel">
+    
+    <div class="cat-wrapper" id="cat-wrap">
+      <img src="cat_open.png" class="frame-open active">
+      <img src="cat_half.png" class="frame-half">
+      <img src="cat_closed.png" class="frame-closed">
+    </div>
+
+    <h2 class="startText">
+      <span style="--i:1">Welcome</span>
+      <span style="--i:2">Back,</span>
+      <span style="--i:3">Captain!</span>
+    </h2>
+    <br>
+    <h3 class="subStart">
+      <span style="--i:4">Ready</span>
+      <span style="--i:5">to</span>
+      <span style="--i:6">move</span>
+      <span style="--i:7">the</span>
+      <span style="--i:8">world</span>
+      <span style="--i:9">today?</span>
+    </h3>
+  </div>
+
+  <div class="right" id="rightPanel">
+    <div id="flashMsg" class="flash"></div>
+
+    <div id="view-login">
+      <h1>Sign In</h1>
+      <p class="subtitle">Enter your credentials to access the control tower</p>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="captain@logitwin.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••">
+      </div>
+      <span class="forgot-link" onclick="showView('forgot-email')">Forgot password?</span>
+      <button class="btn-main" onclick="doLogin()">Sign In →</button>
+      <div class="switch-text">Don't have an account? <span onclick="switchToSignup()">Create one</span></div>
+    </div>
+
+    <div id="view-signup" style="display:none;">
+      <h1>Create Account</h1>
+      <p class="subtitle">Join the LogiTwin network — it's free</p>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="you@company.com">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signup-password" placeholder="Min 8 characters">
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="signup-confirm" placeholder="Repeat password">
+      </div>
+      <button class="btn-main" style="margin-top:4px;" onclick="doSignup()">Create Account →</button>
+      <div class="switch-text">Already have an account? <span onclick="switchToLogin()">Sign In</span></div>
+    </div>
+
+    <div id="view-forgot-email" style="display:none;">
+      <h1>Reset Password</h1>
+      <p class="subtitle">We'll send a one-time code to your email</p>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="forgot-email" placeholder="captain@logitwin.com">
+      </div>
+      <button class="btn-main" onclick="doSendOTP()">Send OTP →</button>
+      <div class="switch-text"><span onclick="switchToLogin()">← Back to Sign In</span></div>
+    </div>
+
+    <div id="view-forgot-otp" style="display:none;">
+      <h1>Enter OTP</h1>
+      <p class="subtitle">Check your inbox and paste the 6-digit code</p>
+      <div class="otp-inputs">
+        <input type="text" maxlength="1" class="otp-box" oninput="otpMove(this,0)">
+        <input type="text" maxlength="1" class="otp-box" oninput="otpMove(this,1)">
+        <input type="text" maxlength="1" class="otp-box" oninput="otpMove(this,2)">
+        <input type="text" maxlength="1" class="otp-box" oninput="otpMove(this,3)">
+        <input type="text" maxlength="1" class="otp-box" oninput="otpMove(this,4)">
+        <input type="text" maxlength="1" class="otp-box" oninput="otpMove(this,5)">
+      </div>
+      <button class="btn-main" onclick="doVerifyOTP()">Verify Code →</button>
+      <div class="switch-text"><span onclick="showView('forgot-email')">← Resend OTP</span></div>
+    </div>
+
+    <div id="view-forgot-reset" style="display:none;">
+      <h1>New Password</h1>
+      <p class="subtitle">Choose a strong new password for your account</p>
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="password" id="reset-password" placeholder="Min 8 characters">
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="reset-confirm" placeholder="Repeat password">
+      </div>
+      <button class="btn-main" onclick="doReset()">Save New Password →</button>
+    </div>
+
+  </div></div><script>
+const API_BASE = "http://localhost:8080";
+let forgotEmail = "";
+let blinkInterval;
+
+/* ── Animations ──────────────────────────────────────────── */
+setTimeout(() => {
+  document.querySelector('.roadTop').classList.add('hideRoad');
+  document.querySelector('.roadBottom').classList.add('hideRoad');
+}, 3000);
+
+setTimeout(() => {
+  document.getElementById('mainLogo').classList.add('logoShift');
+  document.getElementById('mainTitle').classList.add('titleShift');
+}, 3300);
+
+setTimeout(() => {
+  document.getElementById('tagline').classList.add('taglineShow');
+}, 3500);
+
+setTimeout(() => {
+  document.querySelector('.startText').classList.add('animateText');
+  document.querySelector('.subStart').classList.add('animateSub');
+}, 3800);
+
+startBlink("cat-wrap");
+
+/* ── Perfect Cat Blink Animation ─────────────────────────── */
+function startBlink(wrapperId) {
+  clearInterval(blinkInterval);
+
+  const wrap = document.getElementById(wrapperId);
+  if (!wrap) return;
+
+  const open   = wrap.querySelector('.frame-open');
+  const half   = wrap.querySelector('.frame-half');
+  const closed = wrap.querySelector('.frame-closed');
+
+  function setFrame(frame) {
+    if (!document.getElementById(wrapperId)) return;
+
+    open.classList.remove('active');
+    half.classList.remove('active');
+    closed.classList.remove('active');
+
+    frame.classList.add('active');
+  }
+
+  function blinkCycle() {
+
+    setTimeout(() => setFrame(half),   80);   // open → half
+    setTimeout(() => setFrame(closed), 160);  // half → closed
+    setTimeout(() => setFrame(half),   240);  // closed → half
+    setTimeout(() => setFrame(open),   320);  // half → open
+
+  }
+
+  // Blink every few seconds
+  blinkInterval = setInterval(blinkCycle, 3000 + Math.random()*2000);
+}
+
+/* ── View management ─────────────────────────────────────── */
+function showView(name) {
+  ["login","signup","forgot-email","forgot-otp","forgot-reset"].forEach(v => {
+    document.getElementById("view-" + v).style.display = "none";
+  });
+  document.getElementById("view-" + name).style.display = "block";
+  hideFlash();
+}
+
+function switchToSignup() {
+  document.getElementById("loginBox").classList.add("signupMode");
+  document.getElementById("leftPanel").innerHTML = `
+    <div class="cat-wrapper" id="cat2-wrap">
+      <img src="cat2_open.png" class="frame-open active">
+      <img src="cat2_half.png" class="frame-half">
+      <img src="cat2_closed.png" class="frame-closed">
+    </div>
+    <h2 class="startText animateText">
+      <span style="--i:1">Start</span>
+      <span style="--i:2">Your</span>
+      <span style="--i:3">Journey!</span>
+    </h2>
+    <br>
+    <h3 class="subStart animateSub">
+      <span style="--i:4">Create</span>
+      <span style="--i:5">your</span>
+      <span style="--i:6">LogiTwin</span>
+      <span style="--i:7">account</span>
+      <span style="--i:8">now.</span>
+    </h3>`;
+  showView("signup");
+  startBlink("cat2-wrap");
+}
+
+function switchToLogin() {
+  document.getElementById("loginBox").classList.remove("signupMode");
+  document.getElementById("leftPanel").innerHTML = `
+    <div class="cat-wrapper" id="cat-wrap">
+      <img src="cat_open.png" class="frame-open active">
+      <img src="cat_half.png" class="frame-half">
+      <img src="cat_closed.png" class="frame-closed">
+    </div>
+    <h2 class="startText animateText">
+      <span style="--i:1">Welcome</span>
+      <span style="--i:2">Back,</span>
+      <span style="--i:3">Captain!</span>
+    </h2>
+    <br>
+    <h3 class="subStart animateSub">
+      <span style="--i:4">Ready</span>
+      <span style="--i:5">to</span>
+      <span style="--i:6">move</span>
+      <span style="--i:7">the</span>
+      <span style="--i:8">world</span>
+      <span style="--i:9">today?</span>
+    </h3>`;
+  showView("login");
+  startBlink("cat-wrap");
+}
+
+/* ── Flash messages ──────────────────────────────────────── */
+function flash(msg, type) {
+  const el = document.getElementById("flashMsg");
+  el.textContent = msg;
+  el.className = `flash ${type} show`;
+}
+function hideFlash() {
+  document.getElementById("flashMsg").className = "flash";
+}
+
+/* ── LOGIN ───────────────────────────────────────────────── */
+async function doLogin() {
+  const email    = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+  if (!email || !password) return flash("Please fill in all fields.", "error");
+
+  try {
+    const res  = await fetch(`${API_BASE}/api/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      flash("Login successful! Redirecting…", "success");
+      setTimeout(() => { window.location.href = "dashboard.html"; }, 900);
+    } else {
+      flash(data.error || "Login failed.", "error");
+    }
+  } catch {
+    flash("Cannot connect to server. Is the backend running?", "error");
+  }
+}
+
+/* ── SIGNUP ──────────────────────────────────────────────── */
+async function doSignup() {
+  const email    = document.getElementById("signup-email").value.trim();
+  const password = document.getElementById("signup-password").value;
+  const confirm  = document.getElementById("signup-confirm").value;
+
+  if (!email || !password) return flash("Please fill in all fields.", "error");
+  if (password !== confirm) return flash("Passwords do not match.", "error");
+  if (password.length < 8)  return flash("Password must be at least 8 characters.", "error");
+
+  try {
+    const res  = await fetch(`${API_BASE}/api/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      flash("Account created! Signing you in…", "success");
+      setTimeout(() => { window.location.href = "dashboard.html"; }, 1000);
+    } else {
+      flash(data.error || "Signup failed.", "error");
+    }
+  } catch {
+    flash("Cannot connect to server. Is the backend running?", "error");
+  }
+}
+
+/* ── FORGOT — Send OTP ───────────────────────────────────── */
+async function doSendOTP() {
+  const email = document.getElementById("forgot-email").value.trim();
+  if (!email) return flash("Enter your email address.", "error");
+  forgotEmail = email;
+
+  try {
+    const res  = await fetch(`${API_BASE}/api/send-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      flash("OTP sent! Check your email (or see console for dev mode).", "success");
+      if (data.otp) console.log("🔑 DEV OTP:", data.otp);
+      showView("forgot-otp");
+    } else {
+      flash(data.error || "Could not send OTP.", "error");
+    }
+  } catch {
+    flash("Cannot connect to server.", "error");
+  }
+}
+
+/* ── OTP Box navigation ──────────────────────────────────── */
+function otpMove(el, idx) {
+  el.value = el.value.replace(/[^0-9]/g,"");
+  const boxes = document.querySelectorAll(".otp-box");
+  if (el.value && idx < 5) boxes[idx+1].focus();
+}
+
+/* ── FORGOT — Verify OTP ─────────────────────────────────── */
+async function doVerifyOTP() {
+  const boxes = document.querySelectorAll(".otp-box");
+  const otp   = [...boxes].map(b => b.value).join("");
+  if (otp.length !== 6) return flash("Enter all 6 digits.", "error");
+
+  try {
+    const res  = await fetch(`${API_BASE}/api/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: forgotEmail, otp })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      flash("OTP verified!", "success");
+      showView("forgot-reset");
+    } else {
+      flash(data.error || "Invalid or expired OTP.", "error");
+    }
+  } catch {
+    flash("Cannot connect to server.", "error");
+  }
+}
+
+/* ── FORGOT — Reset Password ─────────────────────────────── */
+async function doReset() {
+  const password = document.getElementById("reset-password").value;
+  const confirm  = document.getElementById("reset-confirm").value;
+  if (!password) return flash("Enter a new password.", "error");
+  if (password !== confirm) return flash("Passwords do not match.", "error");
+  if (password.length < 8)  return flash("Password must be at least 8 characters.", "error");
+
+  try {
+    const res  = await fetch(`${API_BASE}/api/reset-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: forgotEmail, password })
+    });
+    if (res.ok) {
+      flash("Password updated! Redirecting to login…", "success");
+      setTimeout(() => switchToLogin(), 1200);
+    } else {
+      const data = await res.json();
+      flash(data.error || "Reset failed.", "error");
+    }
+  } catch {
+    flash("Cannot connect to server.", "error");
+  }
+}
+
+/* ── Enter key support ───────────────────────────────────── */
+document.addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  const active = document.querySelector('[id^="view-"]:not([style*="none"])');
+  if (!active) return;
+  if (active.id === "view-login")        doLogin();
+  if (active.id === "view-signup")       doSignup();
+  if (active.id === "view-forgot-email") doSendOTP();
+  if (active.id === "view-forgot-otp")   doVerifyOTP();
+  if (active.id === "view-forgot-reset") doReset();
+});
+</script>
+</body>
+</html>

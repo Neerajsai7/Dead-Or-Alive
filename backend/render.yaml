@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: logitwin-backend
+    runtime: go
+    rootDir: backend
+    buildCommand: go build -o app .
+    startCommand: ./app
+    envVars:
+      - key: PORT
+        value: 8080

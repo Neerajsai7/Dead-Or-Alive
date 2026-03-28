@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LogiTwin — Dashboard</title>
+<style>
+/* ============================================================
+   LogiTwin — Global Styles (Light Theme)
+   ============================================================ */
+
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  color: #1e293b;
+  display: flex;
+  min-height: 100vh;
+  /* Matching the light gradient background */
+  background:
+    radial-gradient(circle at 15% 25%, #60a5fa40, transparent 45%),
+    radial-gradient(circle at 85% 70%, #a78bfa40, transparent 45%),
+    radial-gradient(circle at 50% 80%, #38bdf840, transparent 40%),
+    #f8fafc;
+}
+
+/* Background Grid Pattern */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    linear-gradient(#cbd5e166 1px, transparent 1px),
+    linear-gradient(90deg, #cbd5e166 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: -1;
+}
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+.sidebar {
+  width: 220px;
+  min-height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  box-shadow: 4px 0 20px rgba(99, 102, 241, 0.05);
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: 900;
+  color: #1e293b;
+  margin-bottom: 36px;
+  letter-spacing: 1px;
+}
+
+.logo span {
+  /* Matching the purple gradient from the button */
+  background: linear-gradient(90deg, #a855f7, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+nav { display: flex; flex-direction: column; gap: 8px; }
+
+nav a {
+  text-decoration: none;
+  color: #64748b;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+nav a:hover, nav a.active {
+  background: #eef2ff;
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+/* ── DISRUPTION PANEL ────────────────────────────────────── */
+.sim-panel {
+  margin-top: auto;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.sim-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ea580c;
+  margin-bottom: 10px;
+}
+
+.sim-panel select {
+  width: 100%;
+  padding: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 8px;
+  outline: none;
+}
+.sim-panel select:focus { border-color: #818cf8; }
+
+.btn-disrupt, .btn-clear {
+  width: 100%;
+  padding: 9px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13px;
+  margin-top: 6px;
+  transition: 0.2s;
+}
+
+.btn-disrupt { background: #ef4444; color: white; }
+.btn-disrupt:hover { background: #dc2626; }
+.btn-clear   { background: #10b981; color: white; }
+.btn-clear:hover   { background: #059669; }
+
+/* ── MAIN CONTENT ────────────────────────────────────────── */
+.main {
+  margin-left: 220px;
+  flex: 1;
+  padding: 24px 32px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.topbar h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.live-badge {
+  background: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+/* ── CARDS (Unified Style) ───────────────────────────────── */
+.card, .kpi-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05);
+  transition: 0.2s;
+}
+
+/* ── KPI CARDS ───────────────────────────────────────────── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card:hover { border-color: #a5b4fc; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1); }
+.kpi-card.warn  { border-color: #fdba74; }
+
+.kpi-label {
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.kpi-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #6366f1; /* Primary Purple */
+}
+
+.kpi-card.warn .kpi-value { color: #ea580c; }
+
+/* ── MID ROW (map + events) ──────────────────────────────── */
+.card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mid-row {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.map-card #map {
+  height: 360px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* ── EVENTS ──────────────────────────────────────────────── */
+.events-card {
+  overflow-y: auto;
+  max-height: 420px;
+}
+
+.event-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 13px;
+}
+
+.event-time { color: #64748b; font-size: 11px; min-width: 40px; font-weight: 600; }
+
+.event-badge {
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.event-badge.disruption { background: #fee2e2; color: #dc2626; }
+.event-badge.alert      { background: #ffedd5; color: #ea580c; }
+.event-badge.info       { background: #e0f2fe; color: #0284c7; }
+
+.event-msg { color: #334155; flex: 1; }
+
+/* ── SEVERITY COLORS ─────────────────────────────────────── */
+.sev-high   { border-left: 3px solid #ef4444; padding-left: 10px; }
+.sev-medium { border-left: 3px solid #f97316; padding-left: 10px; }
+.sev-low    { border-left: 3px solid #10b981; padding-left: 10px; }
+</style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="logo">Logi<span>Twin</span></div>
+    
+    <nav>
+      <a href="dashboard.html" class="active">📊 Dashboard</a>
+      <a href="inventory.html">📦 Inventory Levels</a>
+      <a href="index.html">🚪 Logout</a>
+    </nav>
+
+    <div class="sim-panel">
+      <div class="sim-title">⚡ Disruption Simulator</div>
+      <select id="disrupt-node">
+        <option value="N003">Chennai Port</option>
+        <option value="N002">Delhi Center</option>
+        <option value="N001">Mumbai Hub</option>
+      </select>
+      <button class="btn-disrupt">🔴 Disrupt Node</button>
+      <button class="btn-clear">✅ Clear Status</button>
+    </div>
+  </div>
+
+  <div class="main">
+    
+    <div class="topbar">
+      <h1>Digital Twin Dashboard</h1>
+      <div class="live-badge">🟢 LIVE</div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Active Vehicles</div>
+        <div class="kpi-value" id="kpi-vehicles">12</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">On-Time Rate</div>
+        <div class="kpi-value" id="kpi-ontime">94.2%</div>
+      </div>
+      <div class="kpi-card warn">
+        <div class="kpi-label">Disruptions</div>
+        <div class="kpi-value" id="kpi-disruptions">1</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Inventory Health</div>
+        <div class="kpi-value" id="kpi-health">78%</div>
+      </div>
+    </div>
+
+    <div class="mid-row">
+      
+      <div class="card map-card">
+        <div class="card-title">🗺️ Live Supply Chain Map</div>
+        <div id="map">
+          [ Map Rendering Area ]
+        </div>
+      </div>
+
+      <div class="card events-card">
+        <div class="card-title">🔔 Event Log</div>
+        
+        <div id="events-list">
+          <div class="event-item sev-high">
+            <span class="event-time">09:12</span>
+            <span class="event-badge disruption">Disruption</span>
+            <span class="event-msg">Chennai Port route disrupted due to weather</span>
+          </div>
+          
+          <div class="event-item sev-medium">
+            <span class="event-time">08:45</span>
+            <span class="event-badge alert">Alert</span>
+            <span class="event-msg">Stock running low at Delhi Center</span>
+          </div>
+
+          <div class="event-item sev-low">
+            <span class="event-time">08:30</span>
+            <span class="event-badge info">Info</span>
+            <span class="event-msg">TRK-101 departed Mumbai Hub on schedule</span>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
