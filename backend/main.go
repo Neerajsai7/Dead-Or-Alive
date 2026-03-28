@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -37,6 +40,9 @@ func main() {
 	http.HandleFunc("/events", corsMiddleware(eventsHandler))
 	http.HandleFunc("/disrupt", corsMiddleware(disruptHandler))
 	http.HandleFunc("/disrupt/clear", corsMiddleware(clearDisruptHandler))
+	
+	// 🤖 NEW: AI Chatbot Route!
+	http.HandleFunc("/api/chat", corsMiddleware(chatHandler))
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -375,4 +381,86 @@ func clearDisruptHandler(w http.ResponseWriter, r *http.Request) {
 		"status":  "disruption cleared",
 		"node_id": nodeID,
 	})
+}
+
+// ─────────────────────────────────────────────
+// 🤖 AI CHAT HANDLER (RAG Pipeline)
+// ─────────────────────────────────────────────
+
+func chatHandler(w http.ResponseWriter, r *http.Request) {
+	// Only accept POST requests
+	if r.Method != http.MethodPost {
+		writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "Method not allowed"})
+		return
+	}
+
+	// 1. Get the user's message from the frontend
+	var reqData map[string]string
+	if err := json.NewDecoder(r.Body).Decode(&reqData); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"reply": "Could not read message."})
+		return
+	}
+	userMessage := reqData["message"]
+	if userMessage == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"reply": "Message cannot be empty."})
+		return
+	}
+
+	// 2. Fetch live context from the LogiTwin Database (Mini-RAG!)
+	var disruptedNodes int
+	var delayedVehicles int
+	db.QueryRow("SELECT COUNT(*) FROM nodes WHERE status='disrupted'").Scan(&disruptedNodes)
+	db.QueryRow("SELECT COUNT(*) FROM vehicles WHERE status='delayed'").Scan(&delayedVehicles)
+
+	// 3. Build the System Prompt
+	systemContext := fmt.Sprintf(
+		"You are LogiTwin, an AI supply chain assistant. Current Network Status: %d warehouses disrupted, %d vehicles delayed. Answer concisely in 2-3 sentences. User asks: %s",
+		disruptedNodes, delayedVehicles, userMessage,
+	)
+
+	// 4. Prepare the Gemini API Request
+	apiKey := os.Getenv("GEMINI_API_KEY")
+	if apiKey == "" {
+		fmt.Println("⚠️ WARNING: GEMINI_API_KEY is not set in the environment!")
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"reply": "AI is currently offline. Please check server configuration."})
+		return
+	}
+
+	url := "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey
+
+	reqBody := map[string]interface{}{
+		"contents": []map[string]interface{}{
+			{"parts": []map[string]string{{"text": systemContext}}},
+		},
+	}
+	jsonBody, _ := json.Marshal(reqBody)
+
+	// 5. Send to Gemini
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonBody))
+	if err != nil {
+		fmt.Printf("Gemini POST Error: %v\n", err)
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"reply": "Error connecting to AI brain."})
+		return
+	}
+	defer resp.Body.Close()
+
+	// 6. Parse the Gemini JSON response
+	bodyBytes, _ := io.ReadAll(resp.Body)
+	var result map[string]interface{}
+	json.Unmarshal(bodyBytes, &result)
+
+	reply := "I couldn't process that request."
+
+	// Deep extraction of the text response from Gemini's JSON structure
+	if candidates, ok := result["candidates"].([]interface{}); ok && len(candidates) > 0 {
+		if content, ok := candidates[0].(map[string]interface{})["content"].(map[string]interface{}); ok {
+			if parts, ok := content["parts"].([]interface{}); ok && len(parts) > 0 {
+				if text, ok := parts[0].(map[string]interface{})["text"].(string); ok {
+					reply = text
+				}
+			}
+		}
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{"reply": reply})
 }
