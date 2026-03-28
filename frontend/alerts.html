@@ -86,7 +86,10 @@ nav a:hover, nav a.active { background: #eef2ff; color: #4f46e5; font-weight: 70
   </div>
 
 <script>
-const API_BASE = "http://localhost:8080";
+// This checks if you are running locally or on the web
+const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    ? "http://localhost:8080" 
+    : "https://your-logitwin-backend.onrender.com"; // <-- Put your live Go backend URL here later!
 
 async function fetchAlerts() {
   try {
