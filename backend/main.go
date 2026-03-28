@@ -40,7 +40,7 @@ func main() {
 	http.HandleFunc("/events", corsMiddleware(eventsHandler))
 	http.HandleFunc("/disrupt", corsMiddleware(disruptHandler))
 	http.HandleFunc("/disrupt/clear", corsMiddleware(clearDisruptHandler))
-	
+
 	// 🤖 NEW: AI Chatbot Route!
 	http.HandleFunc("/api/chat", corsMiddleware(chatHandler))
 
@@ -446,10 +446,21 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 6. Parse the Gemini JSON response
 	bodyBytes, _ := io.ReadAll(resp.Body)
+	
+	// 🚨 DEBUG: Print exactly what Gemini sent back to your Render logs
+	fmt.Println("GEMINI RAW RESPONSE:", string(bodyBytes))
+
 	var result map[string]interface{}
 	json.Unmarshal(bodyBytes, &result)
 
 	reply := "I couldn't process that request."
+
+	// 🚨 NEW: Check if Gemini returned an explicit API error and send it to the chat UI!
+	if errInfo, ok := result["error"].(map[string]interface{}); ok {
+		if errMsg, ok := errInfo["message"].(string); ok {
+			reply = "Gemini API Error: " + errMsg
+		}
+	}
 
 	// Deep extraction of the text response from Gemini's JSON structure
 	if candidates, ok := result["candidates"].([]interface{}); ok && len(candidates) > 0 {
