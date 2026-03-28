@@ -3,24 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LogiTwin — Alerts</title>
+<title>LogiTwin — System Alerts</title>
 <style>
 /* ============================================================
-   LogiTwin — Global Styles (Light Theme + Custom Fonts)
+   LogiTwin — Global Styles (Light Theme)
    ============================================================ */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* Set default small text to Lucida Bright */
 body {
   font-family: "Lucida Bright", Georgia, serif; 
-  color: #1e293b; display: flex; min-height: 100vh;
-  background: radial-gradient(circle at 15% 25%, #60a5fa40, transparent 45%), radial-gradient(circle at 85% 70%, #a78bfa40, transparent 45%), radial-gradient(circle at 50% 80%, #38bdf840, transparent 40%), #f8fafc;
+  color: #1e293b;
+  display: flex;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 25%, #60a5fa40, transparent 45%),
+    radial-gradient(circle at 85% 70%, #a78bfa40, transparent 45%),
+    radial-gradient(circle at 50% 80%, #38bdf840, transparent 40%),
+    #f8fafc;
 }
 
-/* Set headings, bold letters, and badges to Cambria */
 h1, h2, h3, h4, h5, h6, b, strong, button, th,
-.logo, .topbar h1, .sim-title, .card-title,
-nav a, .badge, .live-badge, .event-badge, .event-time {
+.logo, .topbar h1, nav a, .live-badge, .alert-type {
   font-family: Cambria, Georgia, serif;
 }
 
@@ -30,115 +33,124 @@ body::before {
   background-size: 60px 60px; z-index: -1;
 }
 
-/* ── SIDEBAR ─────────────────────────────────────────────── */
-.sidebar {
-  width: 220px; min-height: 100vh; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 24px 16px; position: fixed; top: 0; left: 0; bottom: 0; box-shadow: 4px 0 20px rgba(99, 102, 241, 0.05); z-index: 1000;
-}
+.sidebar { width: 220px; min-height: 100vh; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 24px 16px; position: fixed; top: 0; left: 0; bottom: 0; box-shadow: 4px 0 20px rgba(99, 102, 241, 0.05); }
 .logo { font-size: 26px; font-weight: 900; color: #1e293b; margin-bottom: 36px; letter-spacing: 1px; }
 .logo span { background: linear-gradient(90deg, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 nav { display: flex; flex-direction: column; gap: 8px; }
 nav a { text-decoration: none; color: #64748b; padding: 10px 14px; border-radius: 8px; font-size: 15px; font-weight: 600; transition: 0.2s; }
 nav a:hover, nav a.active { background: #eef2ff; color: #4f46e5; font-weight: 700; }
 
-/* ── MAIN CONTENT ────────────────────────────────────────── */
-.main { margin-left: 220px; flex: 1; padding: 24px 32px; max-width: 1000px; }
+.main { margin-left: 220px; flex: 1; padding: 24px 32px; }
 .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
 .topbar h1 { font-size: 26px; font-weight: 800; color: #0f172a; }
 .live-badge { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; animation: pulse 2s infinite; letter-spacing: 0.5px; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
-/* ── EVENTS LIST ─────────────────────────────────────────── */
-.card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05); }
-.card-title { font-size: 15px; font-weight: 700; color: #475569; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+.alert-card { background: white; border: 1px solid #e2e8f0; border-radius: 14px; padding: 0; overflow: hidden; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05); }
+.alert-table { width: 100%; border-collapse: collapse; }
+.alert-table th { text-align: left; padding: 16px; background: #f8fafc; color: #64748b; font-size: 12px; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; font-weight: 700; }
+.alert-table td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; }
+.alert-row:hover { background: #f1f5f966; }
 
-.event-item {
-  display: flex; align-items: center; gap: 16px; padding: 16px; border-bottom: 1px solid #f1f5f9; transition: 0.2s; border-radius: 8px;
-}
-.event-item:hover { background: #f8fafc; }
+.alert-type { font-weight: 800; text-transform: uppercase; font-size: 11px; padding: 4px 10px; border-radius: 10px; }
+.type-disruption { background: #fee2e2; color: #dc2626; }
+.type-alert      { background: #ffedd5; color: #ea580c; }
+.type-info       { background: #e0f2fe; color: #0284c7; }
 
-.event-time { color: #64748b; font-size: 14px; min-width: 50px; font-weight: 700; }
-.event-badge { padding: 4px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; text-transform: uppercase; min-width: 90px; text-align: center; letter-spacing: 0.5px; }
-.event-msg { color: #334155; font-size: 15px; font-weight: 500; flex: 1; }
+.severity-pill { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.sev-high { background: #ef4444; box-shadow: 0 0 8px #ef444466; }
+.sev-medium { background: #f97316; }
+.sev-low { background: #10b981; }
 
-.event-badge.disruption { background: #fee2e2; color: #dc2626; }
-.event-badge.alert      { background: #ffedd5; color: #ea580c; }
-.event-badge.info       { background: #e0f2fe; color: #0284c7; }
-
-.sev-high   { border-left: 4px solid #ef4444; }
-.sev-medium { border-left: 4px solid #f97316; }
-.sev-low    { border-left: 4px solid #10b981; }
+.time-stamp { font-family: monospace; color: #94a3b8; font-weight: 600; font-size: 12px; }
 </style>
 </head>
 <body>
 
-  <div class="sidebar">
-    <div class="logo">Logi<span>Twin</span></div>
-    <nav>
-      <a href="dashboard.html">📊 Dashboard / Sim</a>
-      <a href="inventory.html">📦 Inventory Levels</a>
-      <a href="vehicles.html">🚚 Active Vehicles</a>
-      <a href="alerts.html" class="active">🔔 System Alerts</a>
-      <a href="index.html">🚪 Logout</a>
-    </nav>
+<div class="sidebar">
+  <div class="logo">Logi<span>Twin</span></div>
+  <nav>
+    <a href="dashboard.html">📊 Dashboard / Sim</a>
+    <a href="inventory.html">📦 Inventory Levels</a>
+    <a href="vehicles.html">🚚 Active Vehicles</a>
+    <a href="alerts.html" class="active">🔔 System Alerts</a>
+    <a href="index.html">🚪 Logout</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h1>System Alerts</h1>
+    <div class="live-badge">🟢 LIVE</div>
   </div>
 
-  <div class="main">
-    <div class="topbar">
-      <h1>System Alerts & Event Log</h1>
-      <div class="live-badge">🟢 LIVE</div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">⏱️ Real-Time Supply Chain Feed</div>
-      <div id="events-list">
-        <div style="padding:20px; color:#94a3b8; font-size:14px; text-align:center;">Listening for events...</div>
-      </div>
-    </div>
+  <div class="alert-card">
+    <table class="alert-table">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Type</th>
+          <th>Severity</th>
+          <th>Message</th>
+        </tr>
+      </thead>
+      <tbody id="alerts-body">
+        <tr><td colspan="4" style="text-align:center; padding:40px; color:#94a3b8;">Monitoring system logs...</td></tr>
+      </tbody>
+    </table>
   </div>
+</div>
 
 <script>
-/*
-// CHANGE THIS:
+// ⚠️ REPLACE THIS WITH YOUR LIVE RENDER URL ONCE DEPLOYED
 const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://localhost:8080" 
     : "https://logitwin-api.onrender.com"; 
-*/
-
-// TO THIS (Using your actual copied Render link):
-const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-    ? "http://localhost:8080" 
-    : "https://logitwin-api.render.com"; // <-- Paste your real Render link here! (No slash at the end)
 
 async function fetchAlerts() {
   try {
-    const res = await fetch(`${API_BASE}/events`);
-    if (!res.ok) throw new Error("Network response was not ok");
-    const events = await res.json();
-
-    const list = document.getElementById('events-list');
-    list.innerHTML = events.map(e => {
-        let sevClass = "sev-low";
-        let badgeClass = "info";
-        
-        if (e.severity === "high" || e.type === "disruption") { sevClass = "sev-high"; badgeClass = "disruption"; }
-        else if (e.severity === "medium" || e.type === "alert") { sevClass = "sev-medium"; badgeClass = "alert"; }
-
-        return `
-        <div class="event-item ${sevClass}">
-            <span class="event-time">${e.time}</span>
-            <span class="event-badge ${badgeClass}">${e.type}</span>
-            <span class="event-msg">${e.message}</span>
-        </div>`;
-    }).join('');
-
-  } catch (err) {
-    console.error("Failed to load events:", err);
-    document.getElementById('events-list').innerHTML = `<div style="padding:20px; color:#ef4444; font-size:14px; text-align:center;">Cannot connect to backend.</div>`;
+    const response = await fetch(`${API_BASE}/events`);
+    if (!response.ok) throw new Error("Network response was not ok");
+    const events = await response.json();
+    renderAlerts(events);
+  } catch (error) {
+    console.error("Alerts sync failed:", error);
   }
 }
 
+function renderAlerts(events) {
+  const tbody = document.getElementById('alerts-body');
+  
+  if (!events || events.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:40px; color:#94a3b8;">No alerts at this time.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = events.map(e => {
+    // Failsafe for missing data
+    const type = e.type || "info";
+    const severity = e.severity || "low";
+    
+    const typeClass = `type-${type}`;
+    const sevClass = `sev-${severity}`;
+    
+    return `
+      <tr class="alert-row">
+        <td class="time-stamp">${e.time || '--:--'}</td>
+        <td><span class="alert-type ${typeClass}">${type}</span></td>
+        <td>
+          <span class="severity-pill ${sevClass}"></span>
+          <span style="font-weight:700; text-transform:capitalize;">${severity}</span>
+        </td>
+        <td style="font-weight:500;">${e.message || 'System event logged'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Initial fetch and auto-refresh every 4 seconds
 fetchAlerts();
-setInterval(fetchAlerts, 3000);
+setInterval(fetchAlerts, 4000);
 </script>
 </body>
 </html>

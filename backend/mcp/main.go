@@ -2,35 +2,43 @@ package main
 
 import (
 	"context"
-	"database/sql"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
-	_ "modernc.org/sqlite" // CGO-free SQLite driver for Mac
 )
+
+// Define a struct that matches the JSON coming from your backend /nodes endpoint
+type NodeData struct {
+	Name     string `json:"name"`
+	Stock    int    `json:"stock"`
+	Capacity int    `json:"capacity"`
+	Status   string `json:"status"`
+}
 
 func main() {
 	// 1. Initialize the LogiTwin MCP Server
 	s := server.NewMCPServer(
 		"LogiTwin-Explorer",
-		"1.0.0",
+		"1.1.0", // Bumped version for the API upgrade!
 	)
 
-	// 2. Define a tool to fetch inventory
+	// 2. Define the tool
 	inventoryTool := mcp.NewTool("list_inventory",
-		mcp.WithDescription("Lists all warehouse nodes, their current stock levels, capacity, and disruption status from the LogiTwin database"),
+		mcp.WithDescription("Lists all warehouse nodes, their current stock levels, capacity, and disruption status from the live LogiTwin API"),
 	)
 
 	// 3. Register the tool handler
 	s.AddTool(inventoryTool, inventoryHandler)
 
-	// 4. Start the server using Stdio
-	// Logging to Stderr so it shows up in Claude's "View Logs" button
+	// 4. Start the server
 	logger := log.New(os.Stderr, "[LogiTwin-MCP] ", log.LstdFlags)
-	logger.Println("Server starting with Absolute Path logic...")
+	logger.Println("Server starting in API-Consumer mode...")
 
 	if err := server.ServeStdio(s); err != nil {
 		logger.Fatalf("Server failed: %v", err)
@@ -38,35 +46,37 @@ func main() {
 }
 
 func inventoryHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-    // ⚠️ THE ABSOLUTE PATH WE JUST FOUND
-    dbPath := "/Users/suyesh/Desktop/logitwin/logitwin.db"
-    
-    db, err := sql.Open("sqlite", dbPath)
-    if err != nil {
-        return mcp.NewToolResultError(fmt.Sprintf("DB Connection Error: %v", err)), nil
-    }
-    defer db.Close()
+	// ⚠️ CHANGE THIS TO YOUR RENDER URL ONCE IT IS LIVE
+	// For local testing, leave it as http://localhost:8080/nodes
+	apiURL := "http://localhost:8080/nodes"
 
-    // Querying your nodes table
-    rows, err := db.Query("SELECT name, stock, capacity, status FROM nodes")
-    if err != nil {
-        // I added the dbPath to the error message so we can see it in Claude if it fails
-        return mcp.NewToolResultError(fmt.Sprintf("SQL Query Failed: %v (Looked at: %s)", err, dbPath)), nil
-    }
-    defer rows.Close()
+	// Make an HTTP GET request to your backend
+	resp, err := http.Get(apiURL)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("API Connection Error. Make sure the backend is running at %s. Details: %v", apiURL, err)), nil
+	}
+	defer resp.Body.Close()
 
-    var output string
-    for rows.Next() {
-        var name, status string
-        var stock, capacity int
-        if err := rows.Scan(&name, &stock, &capacity, &status); err == nil {
-            output += fmt.Sprintf("🏠 %s | Stock: %d/%d | Status: %s\n", name, stock, capacity, status)
-        }
-    }
+	if resp.StatusCode != http.StatusOK {
+		return mcp.NewToolResultError(fmt.Sprintf("API returned bad status: %d", resp.StatusCode)), nil
+	}
 
-    if output == "" {
-        output = "Database found, but the nodes table is empty."
-    }
+	// Read and parse the JSON response
+	body, _ := io.ReadAll(resp.Body)
+	var nodes []NodeData
+	if err := json.Unmarshal(body, &nodes); err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("Failed to parse API data: %v", err)), nil
+	}
 
-    return mcp.NewToolResultText(output), nil
+	// Format the output for Claude
+	var output string
+	for _, node := range nodes {
+		output += fmt.Sprintf("🏠 %s | Stock: %d/%d | Status: %s\n", node.Name, node.Stock, node.Capacity, node.Status)
+	}
+
+	if output == "" {
+		output = "API connected successfully, but returned an empty inventory list."
+	}
+
+	return mcp.NewToolResultText(output), nil
 }

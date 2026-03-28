@@ -23,7 +23,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6, b, strong, button, th,
-.logo, .topbar h1, .sim-title, .card-title, nav a, .live-badge, .v-id {
+.logo, .topbar h1, .v-id, nav a, .live-badge {
   font-family: Cambria, Georgia, serif;
 }
 
@@ -88,14 +88,15 @@ nav a:hover, nav a.active { background: #eef2ff; color: #4f46e5; font-weight: 70
 </div>
 
 <script>
-// ⚠️ PASTE YOUR RENDER URL HERE
+// ⚠️ REPLACE THIS WITH YOUR LIVE RENDER URL ONCE DEPLOYED
 const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://localhost:8080" 
-    : "https://logitwin-api-xxxx.onrender.com"; 
+    : "https://logitwin-api.onrender.com"; 
 
 async function fetchVehicles() {
   try {
     const response = await fetch(`${API_BASE}/vehicles`);
+    if (!response.ok) throw new Error("Network response was not ok");
     const vehicles = await response.json();
     renderVehicles(vehicles);
   } catch (error) {
@@ -105,27 +106,37 @@ async function fetchVehicles() {
 
 function renderVehicles(vehicles) {
   const grid = document.getElementById('vehicle-grid');
+  
+  if (!vehicles || vehicles.length === 0) {
+    grid.innerHTML = '<div style="padding:40px; color:#94a3b8; text-align:center; grid-column:1/-1;">No vehicles currently tracked in the database.</div>';
+    return;
+  }
+
   grid.innerHTML = vehicles.map(v => {
+    // Determine CSS class based on status
     const statusClass = v.status === 'in-transit' ? 'status-transit' : (v.status === 'delayed' ? 'status-delayed' : 'status-idle');
-    const progress = v.status === 'idle' ? 0 : (v.status === 'delayed' ? 45 : 75); // Mock progress based on status
+    
+    // Convert float progress (0.0 to 1.0) to percentage for the progress bar
+    const progressPercent = Math.round((v.progress || 0) * 100);
 
     return `
       <div class="v-card">
         <div class="v-header">
-          <div class="v-id">Unit: ${v.id}</div>
-          <span class="v-status ${statusClass}">${v.status}</span>
+          <div class="v-id">Unit: ${v.id || 'N/A'}</div>
+          <span class="v-status ${statusClass}">${v.status || 'Unknown'}</span>
         </div>
         <div class="v-info">
-          <div><b>📍 Position:</b> ${v.lat.toFixed(4)}, ${v.lng.toFixed(4)}</div>
-          <div><b>⏱️ ETA:</b> ${v.eta || 'N/A'}</div>
+          <div><b>📍 Position:</b> ${v.lat ? v.lat.toFixed(4) : '0.0000'}, ${v.lng ? v.lng.toFixed(4) : '0.0000'}</div>
+          <div><b>⏱️ ETA:</b> ${v.eta || 'Calculating...'}</div>
+          <div><b>📦 Load:</b> ${v.load || 0}%</div>
         </div>
         <div class="v-progress-container">
           <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; color:#64748b;">
             <span>Route Progress</span>
-            <span>${progress}%</span>
+            <span>${progressPercent}%</span>
           </div>
           <div class="v-progress-bar">
-            <div class="v-progress-fill" style="width: ${progress}%"></div>
+            <div class="v-progress-fill" style="width: ${progressPercent}%"></div>
           </div>
         </div>
       </div>
@@ -133,6 +144,7 @@ function renderVehicles(vehicles) {
   }).join('');
 }
 
+// Initial fetch and auto-refresh every 3 seconds
 fetchVehicles();
 setInterval(fetchVehicles, 3000);
 </script>

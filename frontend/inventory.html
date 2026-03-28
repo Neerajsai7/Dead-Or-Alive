@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 /* ============================================================
-   LogiTwin — Global Styles (Light Theme + Custom Fonts)
+   LogiTwin — Global Styles (Light Theme + Glassmorphism)
    ============================================================ */
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -36,34 +36,59 @@ body::before {
   background-size: 60px 60px; z-index: -1;
 }
 
-.sidebar { width: 220px; min-height: 100vh; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; padding: 24px 16px; position: fixed; top: 0; left: 0; bottom: 0; box-shadow: 4px 0 20px rgba(99, 102, 241, 0.05); }
+/* 🧊 Glassmorphism Sidebar */
+.sidebar { 
+  width: 220px; 
+  min-height: 100vh; 
+  background: rgba(255, 255, 255, 0.4); 
+  backdrop-filter: blur(16px); 
+  -webkit-backdrop-filter: blur(16px); 
+  border-right: 1px solid rgba(255, 255, 255, 0.8); 
+  box-shadow: 4px 0 30px rgba(99, 102, 241, 0.1); 
+  display: flex; 
+  flex-direction: column; 
+  padding: 24px 16px; 
+  position: fixed; 
+  top: 0; left: 0; bottom: 0; 
+  z-index: 1000; 
+}
 .logo { font-size: 26px; font-weight: 900; color: #1e293b; margin-bottom: 36px; letter-spacing: 1px; }
 .logo span { background: linear-gradient(90deg, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 nav { display: flex; flex-direction: column; gap: 8px; }
 nav a { text-decoration: none; color: #64748b; padding: 10px 14px; border-radius: 8px; font-size: 15px; font-weight: 600; transition: 0.2s; }
-nav a:hover, nav a.active { background: #eef2ff; color: #4f46e5; font-weight: 700; }
-.sim-panel { margin-top: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; }
+nav a:hover, nav a.active { background: rgba(255, 255, 255, 0.6); color: #4f46e5; font-weight: 700; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+
+/* Glass Panel for Stats */
+.sim-panel { margin-top: auto; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 10px; padding: 14px; }
 .sim-title { font-size: 14px; font-weight: 700; color: #4f46e5; margin-bottom: 6px; }
 
 .main { margin-left: 220px; flex: 1; padding: 24px 32px; }
 .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
 .topbar h1 { font-size: 26px; font-weight: 800; color: #0f172a; }
 .live-badge { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; animation: pulse 2s infinite; letter-spacing: 0.5px; }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
-.card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05); }
+/* 🧊 Glassmorphism Cards */
+.card, .inv-summary-card, .inv-card { 
+  background: rgba(255, 255, 255, 0.8); 
+  backdrop-filter: blur(8px); 
+  -webkit-backdrop-filter: blur(8px); 
+  border: 1px solid rgba(255, 255, 255, 0.9); 
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05); 
+}
+
+.card { border-radius: 14px; padding: 24px; }
 .card-title { font-size: 15px; font-weight: 700; color: #475569; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
 
 .inv-header-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .inv-filter-tabs { display: flex; gap: 8px; }
-.filter-tab { padding: 6px 16px; border-radius: 20px; border: 1px solid #cbd5e1; background: #ffffff; color: #64748b; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s; text-transform: uppercase; letter-spacing: .5px; }
-.filter-tab:hover { border-color: #818cf8; color: #4f46e5; }
+.filter-tab { padding: 6px 16px; border-radius: 20px; border: 1px solid #cbd5e1; background: rgba(255, 255, 255, 0.7); color: #64748b; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s; text-transform: uppercase; letter-spacing: .5px; backdrop-filter: blur(4px); }
+.filter-tab:hover { border-color: #818cf8; color: #4f46e5; background: rgba(255, 255, 255, 0.9); }
 .filter-tab.active { background: #6366f1; border-color: #6366f1; color: #ffffff; }
 .filter-tab.active.warn { background: #f97316; border-color: #f97316; color: #ffffff; }
 .filter-tab.active.crit { background: #ef4444; border-color: #ef4444; color: #ffffff; }
 
 .inv-summary-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-.inv-summary-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05); }
+.inv-summary-card { border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; }
 .inv-summary-card .icon { font-size: 28px; }
 .inv-summary-card .label { font-size: 13px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: .5px; }
 .inv-summary-card .value { font-size: 30px; font-weight: 800; color: #6366f1; }
@@ -71,21 +96,21 @@ nav a:hover, nav a.active { background: #eef2ff; color: #4f46e5; font-weight: 70
 .inv-summary-card.crit .value { color: #dc2626; }
 
 .inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-.inv-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 22px; transition: transform .2s, border-color .2s, box-shadow .2s; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05); }
+.inv-card { border-radius: 14px; padding: 22px; transition: transform .2s, border-color .2s, box-shadow .2s; position: relative; overflow: hidden; }
 .inv-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: #6366f1; }
 .inv-card.status-critical::before { background: #ef4444; }
 .inv-card.status-low::before      { background: #f97316; }
 .inv-card.status-ok::before       { background: #10b981; }
 .inv-card:hover { transform: translateY(-3px); border-color: #a5b4fc; box-shadow: 0 15px 40px rgba(99, 102, 241, 0.1); }
-.inv-card.status-critical { border-color: #fecaca; }
-.inv-card.status-low      { border-color: #fed7aa; }
+.inv-card.status-critical { border-color: rgba(254, 202, 202, 0.8); }
+.inv-card.status-low      { border-color: rgba(254, 215, 170, 0.8); }
 
 .inv-node-id { font-size: 11px; color: #64748b; font-family: monospace; font-weight: 600; letter-spacing: 1px; margin-bottom: 4px; }
 .inv-name  { font-size: 20px; font-weight: 800; margin-bottom: 12px; color: #0f172a; }
 .inv-stock { font-size: 32px; font-weight: 800; color: #6366f1; line-height: 1; font-family: Cambria, serif; }
 .inv-stock span { font-size: 14px; color: #94a3b8; font-weight: 500; font-family: "Lucida Bright", serif; }
 
-.inv-bar-wrap { height: 8px; background: #f1f5f9; border-radius: 6px; margin: 16px 0 8px; overflow: hidden; }
+.inv-bar-wrap { height: 8px; background: rgba(241, 245, 249, 0.6); border-radius: 6px; margin: 16px 0 8px; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); }
 .inv-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; }
 .status-ok       .inv-bar-fill { background: linear-gradient(90deg, #34d399, #10b981); }
 .status-low      .inv-bar-fill { background: linear-gradient(90deg, #fb923c, #f97316); }
@@ -102,12 +127,12 @@ nav a:hover, nav a.active { background: #eef2ff; color: #4f46e5; font-weight: 70
 .inv-trend.up   { color: #10b981; }
 
 .inv-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.inv-table th { text-align: left; padding: 14px; color: #64748b; border-bottom: 2px solid #e2e8f0; font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: .5px; }
-.inv-table td { padding: 16px 14px; border-bottom: 1px solid #f1f5f9; color: #334155; font-weight: 500; }
-.inv-table tr:hover td { background: #f8fafc; }
+.inv-table th { text-align: left; padding: 14px; color: #64748b; border-bottom: 2px solid rgba(226, 232, 240, 0.5); font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: .5px; }
+.inv-table td { padding: 16px 14px; border-bottom: 1px solid rgba(241, 245, 249, 0.5); color: #334155; font-weight: 500; }
+.inv-table tr:hover td { background: rgba(248, 250, 252, 0.5); }
 
 .progress-mini { display: flex; align-items: center; gap: 12px; }
-.progress-mini-bar { flex: 1; height: 6px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+.progress-mini-bar { flex: 1; height: 6px; background: rgba(226, 232, 240, 0.6); border-radius: 4px; overflow: hidden; border: 1px solid rgba(0,0,0,0.05); }
 .progress-mini-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #a855f7, #6366f1); transition: width 0.3s;}
 .progress-mini-fill.warn { background: linear-gradient(90deg, #fb923c, #f97316); }
 .progress-mini-fill.crit { background: linear-gradient(90deg, #f87171, #ef4444); }
@@ -130,7 +155,7 @@ nav a:hover, nav a.active { background: #eef2ff; color: #4f46e5; font-weight: 70
     <a href="alerts.html">🔔 System Alerts</a>
     <a href="index.html">🚪 Logout</a>
   </nav>
-  <div class="sim-panel" style="margin-top:auto;">
+  <div class="sim-panel">
     <div class="sim-title">📊 Quick Stats</div>
     <div style="font-size:12px; color:#64748b; font-weight: 500; line-height:2;">
       Auto-refreshes every 3s<br>
@@ -142,10 +167,12 @@ nav a:hover, nav a.active { background: #eef2ff; color: #4f46e5; font-weight: 70
 <div class="main">
 
   <div class="topbar">
-    <h1>Inventory Manager</h1>
-    <div style="display:flex;gap:12px;align-items:center;">
-      <span id="last-refresh" style="font-size:12px;color:#64748b;font-weight:600;">Refreshing…</span>
-      <div class="live-badge">🟢 LIVE</div>
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <h1>Inventory Manager</h1>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <span id="last-refresh" style="font-size:12px;color:#64748b;font-weight:600;">Refreshing…</span>
+        <div class="live-badge">🟢 LIVE</div>
+      </div>
     </div>
   </div>
 
@@ -194,10 +221,10 @@ nav a:hover, nav a.active { background: #eef2ff; color: #4f46e5; font-weight: 70
 </div>
 
 <script>
-// TO THIS (Using your actual copied Render link):
+// ⚠️ REPLACE THIS WITH YOUR LIVE RENDER URL ONCE DEPLOYED
 const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://localhost:8080" 
-    : "https://logitwin-api.onrender.com"; // <-- Paste your real Render link here! (No slash at the end)
+    : "https://logitwin-api.onrender.com"; 
 
 // ⚠️ CHART INSTANCE AND FONTS
 Chart.defaults.font.family = '"Cambria", Georgia, serif';
@@ -235,8 +262,6 @@ async function refreshInventory() {
 
     renderGrid(allInventory);
     renderTable(allInventory);
-    
-    // ⚠️ ADDED CHART CALL
     updateChart(allInventory);
 
   } catch (error) {
@@ -245,7 +270,7 @@ async function refreshInventory() {
   }
 }
 
-// ⚠️ ADDED CHART CREATION FUNCTION
+// Chart creation and update logic
 function updateChart(inventory) {
   const ctx = document.getElementById('invBarChart').getContext('2d');
   
@@ -267,7 +292,7 @@ function updateChart(inventory) {
       labels: labels,
       datasets: [
         { label: 'Current Stock', data: stockData, backgroundColor: '#6366f1', borderRadius: 4 },
-        { label: 'Empty Capacity', data: remainingCapData, backgroundColor: '#e2e8f0', borderRadius: 4 }
+        { label: 'Empty Capacity', data: remainingCapData, backgroundColor: 'rgba(226, 232, 240, 0.6)', borderRadius: 4 }
       ]
     },
     options: {
