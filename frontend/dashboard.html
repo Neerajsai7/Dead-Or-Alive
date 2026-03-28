@@ -18,7 +18,8 @@
 }
 
 body {
-  font-family: "Segoe UI", sans-serif;
+  /* Set default small text to Lucida Bright */
+  font-family: "Lucida Bright", Georgia, serif;
   color: #1e293b;
   display: flex;
   min-height: 100vh;
@@ -28,6 +29,13 @@ body {
     radial-gradient(circle at 85% 70%, #a78bfa40, transparent 45%),
     radial-gradient(circle at 50% 80%, #38bdf840, transparent 40%),
     #f8fafc;
+}
+
+/* Set headings, bold letters, and buttons to Cambria */
+h1, h2, h3, h4, h5, h6, b, strong, button,
+.logo, .topbar h1, .sim-title, .card-title, .kpi-value, .kpi-label,
+.btn-disrupt, .btn-clear, nav a, .event-badge, .live-badge {
+  font-family: Cambria, Georgia, serif;
 }
 
 /* Background Grid Pattern */
@@ -78,8 +86,8 @@ nav a {
   color: #64748b;
   padding: 10px 14px;
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   transition: 0.2s;
 }
 
@@ -99,7 +107,7 @@ nav a:hover, nav a.active {
 }
 
 .sim-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: #ea580c;
   margin-bottom: 10px;
@@ -115,6 +123,7 @@ nav a:hover, nav a.active {
   font-size: 13px;
   margin-bottom: 8px;
   outline: none;
+  font-family: "Lucida Bright", Georgia, serif;
 }
 .sim-panel select:focus { border-color: #818cf8; }
 
@@ -125,7 +134,7 @@ nav a:hover, nav a.active {
   border-radius: 8px;
   font-weight: 700;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   margin-top: 6px;
   transition: 0.2s;
 }
@@ -150,7 +159,7 @@ nav a:hover, nav a.active {
 }
 
 .topbar h1 {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 800;
   color: #0f172a;
 }
@@ -161,9 +170,10 @@ nav a:hover, nav a.active {
   border: 1px solid #bbf7d0;
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   animation: pulse 2s infinite;
+  letter-spacing: 0.5px;
 }
 
 @keyframes pulse {
@@ -193,16 +203,16 @@ nav a:hover, nav a.active {
 .kpi-card.warn  { border-color: #fdba74; }
 
 .kpi-label {
-  font-size: 12px;
+  font-size: 13px;
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 8px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .kpi-value {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 800;
   color: #6366f1; /* Primary Purple */
 }
@@ -211,7 +221,7 @@ nav a:hover, nav a.active {
 
 /* ── MID ROW (map + events) ──────────────────────────────── */
 .card-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #475569;
   margin-bottom: 14px;
@@ -250,17 +260,18 @@ nav a:hover, nav a.active {
   gap: 8px;
   padding: 12px 0;
   border-bottom: 1px solid #f1f5f9;
-  font-size: 13px;
+  font-size: 14px;
 }
 
-.event-time { color: #64748b; font-size: 11px; min-width: 40px; font-weight: 600; }
+.event-time { color: #64748b; font-size: 12px; min-width: 44px; font-weight: 700; }
 
 .event-badge {
   padding: 3px 8px;
   border-radius: 10px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .event-badge.disruption { background: #fee2e2; color: #dc2626; }
@@ -344,10 +355,17 @@ nav a:hover, nav a.active {
   </div>
 
 <script>
-// This checks if you are running locally or on the web
+/*
+// CHANGE THIS:
 const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://localhost:8080" 
-    : "https://logitwin-api.onrender.com"; // <-- Put your live Go backend URL here later!
+    : "https://logitwin-api.onrender.com"; 
+*/
+
+// TO THIS (Using your actual copied Render link):
+const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    ? "http://localhost:8080" 
+    : "https://logitwin-api-xxxx.onrender.com"; // <-- Paste your real Render link here! (No slash at the end)
 
 // 1. Initialize Leaflet Map (Centered on India)
 const map = L.map('map').setView([20.5937, 78.9629], 5);

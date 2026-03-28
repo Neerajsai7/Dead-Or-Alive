@@ -5,12 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LogiTwin — Login</title>
 <style>
+/* ============================================================
+   LogiTwin — Global Styles (Light Theme + Custom Fonts)
+   ============================================================ */
 *, *::before, *::after {
   margin: 0; padding: 0; box-sizing: border-box;
-  font-family: "Segoe UI", sans-serif;
+  font-family: inherit; /* Allows inputs to inherit custom fonts */
 }
 
+/* 1. Set the default "small lines" text to Lucida Bright */
 body {
+  font-family: "Lucida Bright", Georgia, serif; 
   height: 100vh;
   overflow: hidden;
   background:
@@ -18,6 +23,12 @@ body {
     radial-gradient(circle at 85% 70%, #a78bfa80, transparent 45%),
     radial-gradient(circle at 50% 80%, #38bdf880, transparent 40%),
     #f1f5f9;
+}
+
+/* 2. Set headings, bold letters, buttons, and titles to Cambria */
+h1, h2, h3, h4, h5, h6, b, strong, button,
+.bigTitle, .startText span, .btn-main, .otp-inputs input, label, .switch-text span {
+  font-family: Cambria, Georgia, serif;
 }
 
 body::before {
@@ -463,10 +474,18 @@ body::before {
     </div>
 
   </div></div><script>
-// This checks if you are running locally or on the web
+/*
+// CHANGE THIS:
 const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://localhost:8080" 
-    : "https://logitwin-api.onrender.com"; // <-- Put your live Go backend URL here later!
+    : "https://logitwin-api.onrender.com"; 
+*/
+
+// TO THIS (Using your actual copied Render link):
+const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    ? "http://localhost:8080" 
+    : "https://logitwin-api-xxxx.onrender.com"; // <-- Paste your real Render link here! (No slash at the end)
+
 let forgotEmail = "";
 let blinkInterval;
 

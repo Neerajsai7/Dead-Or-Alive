@@ -6,13 +6,24 @@
 <title>LogiTwin — Vehicles</title>
 <style>
 /* ============================================================
-   LogiTwin — Global Styles (Light Theme)
+   LogiTwin — Global Styles (Light Theme + Custom Fonts)
    ============================================================ */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* Set default small text to Lucida Bright */
 body {
-  font-family: "Segoe UI", sans-serif; color: #1e293b; display: flex; min-height: 100vh;
+  font-family: "Lucida Bright", Georgia, serif; 
+  color: #1e293b; display: flex; min-height: 100vh;
   background: radial-gradient(circle at 15% 25%, #60a5fa40, transparent 45%), radial-gradient(circle at 85% 70%, #a78bfa40, transparent 45%), radial-gradient(circle at 50% 80%, #38bdf840, transparent 40%), #f8fafc;
 }
+
+/* Set headings, bold letters, and buttons to Cambria */
+h1, h2, h3, h4, h5, h6, b, strong, button, th,
+.logo, .topbar h1, .sim-title, .card-title, .kpi-value, .kpi-label,
+nav a, .badge, .live-badge {
+  font-family: Cambria, Georgia, serif;
+}
+
 body::before {
   content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background-image: linear-gradient(#cbd5e166 1px, transparent 1px), linear-gradient(90deg, #cbd5e166 1px, transparent 1px);
@@ -26,33 +37,33 @@ body::before {
 .logo { font-size: 26px; font-weight: 900; color: #1e293b; margin-bottom: 36px; letter-spacing: 1px; }
 .logo span { background: linear-gradient(90deg, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 nav { display: flex; flex-direction: column; gap: 8px; }
-nav a { text-decoration: none; color: #64748b; padding: 10px 14px; border-radius: 8px; font-size: 14px; font-weight: 500; transition: 0.2s; }
+nav a { text-decoration: none; color: #64748b; padding: 10px 14px; border-radius: 8px; font-size: 15px; font-weight: 600; transition: 0.2s; }
 nav a:hover, nav a.active { background: #eef2ff; color: #4f46e5; font-weight: 700; }
 
 /* ── MAIN CONTENT ────────────────────────────────────────── */
 .main { margin-left: 220px; flex: 1; padding: 24px 32px; }
 .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-.topbar h1 { font-size: 24px; font-weight: 800; color: #0f172a; }
-.live-badge { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; animation: pulse 2s infinite; }
+.topbar h1 { font-size: 26px; font-weight: 800; color: #0f172a; }
+.live-badge { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; animation: pulse 2s infinite; letter-spacing: 0.5px; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
 /* ── SUMMARY CARDS ───────────────────────────────────────── */
 .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
 .kpi-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05); }
-.kpi-label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 600; }
-.kpi-value { font-size: 28px; font-weight: 800; color: #6366f1; }
+.kpi-label { font-size: 13px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 700; }
+.kpi-value { font-size: 30px; font-weight: 800; color: #6366f1; }
 .kpi-card.warn .kpi-value { color: #ea580c; }
 
 /* ── TABLE ───────────────────────────────────────────────── */
 .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 24px; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05); }
-.card-title { font-size: 14px; font-weight: 700; color: #475569; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+.card-title { font-size: 15px; font-weight: 700; color: #475569; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
 
 .v-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.v-table th { text-align: left; padding: 14px; color: #64748b; border-bottom: 2px solid #e2e8f0; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: .5px; }
+.v-table th { text-align: left; padding: 14px; color: #64748b; border-bottom: 2px solid #e2e8f0; font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: .5px; }
 .v-table td { padding: 16px 14px; border-bottom: 1px solid #f1f5f9; color: #334155; font-weight: 500; }
 .v-table tr:hover td { background: #f8fafc; }
 
-.badge { padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+.badge { padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 .badge.transit { background: #e0f2fe; color: #0284c7; }
 .badge.delayed { background: #ffedd5; color: #ea580c; }
 .badge.idle    { background: #f1f5f9; color: #64748b; }
@@ -67,7 +78,7 @@ nav a:hover, nav a.active { background: #eef2ff; color: #4f46e5; font-weight: 70
   <div class="sidebar">
     <div class="logo">Logi<span>Twin</span></div>
     <nav>
-      <a href="dashboard.html">📊 Dashboard / Simulator</a>
+      <a href="dashboard.html">📊 Dashboard / Sim</a>
       <a href="inventory.html">📦 Inventory Levels</a>
       <a href="vehicles.html" class="active">🚚 Active Vehicles</a>
       <a href="alerts.html">🔔 System Alerts</a>
@@ -108,10 +119,17 @@ nav a:hover, nav a.active { background: #eef2ff; color: #4f46e5; font-weight: 70
   </div>
 
 <script>
-// This checks if you are running locally or on the web
+/*
+// CHANGE THIS:
 const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://localhost:8080" 
-    : "https://your-logitwin-backend.onrender.com"; // <-- Put your live Go backend URL here later!
+    : "https://logitwin-api.onrender.com"; 
+*/
+
+// TO THIS (Using your actual copied Render link):
+const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    ? "http://localhost:8080" 
+    : "https://logitwin-api-xxxx.onrender.com"; // <-- Paste your real Render link here! (No slash at the end)
 
 async function fetchVehicles() {
   try {
@@ -135,14 +153,14 @@ async function fetchVehicles() {
       
       return `
         <tr>
-          <td style="font-family:monospace; font-weight:700;">${v.id}</td>
+          <td style="font-family:monospace; font-weight:700; font-size:13px;">${v.id}</td>
           <td style="text-transform:capitalize;">${v.type}</td>
           <td style="font-weight:600; color:#475569;">${v.origin_id} &rarr; ${v.dest_id}</td>
-          <td>${v.load}%</td>
+          <td><b>${v.load}%</b></td>
           <td>
             <div class="progress-wrap">
               <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-              <span style="font-size:12px; color:#64748b; font-weight:600; min-width:30px;">${pct}%</span>
+              <span style="font-size:12px; color:#64748b; font-weight:700; min-width:30px;">${pct}%</span>
             </div>
           </td>
           <td style="color:#64748b; font-weight:600;">${v.eta || '--'}</td>

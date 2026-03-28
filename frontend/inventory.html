@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 /* ============================================================
-   LogiTwin — Global Styles (Light Theme)
+   LogiTwin — Global Styles (Light Theme + Custom Fonts)
    ============================================================ */
 
 *, *::before, *::after {
@@ -15,7 +15,8 @@
 }
 
 body {
-  font-family: "Segoe UI", sans-serif;
+  /* Set default small text to Lucida Bright */
+  font-family: "Lucida Bright", Georgia, serif; 
   color: #1e293b;
   display: flex;
   min-height: 100vh;
@@ -24,6 +25,13 @@ body {
     radial-gradient(circle at 85% 70%, #a78bfa40, transparent 45%),
     radial-gradient(circle at 50% 80%, #38bdf840, transparent 40%),
     #f8fafc;
+}
+
+/* Set headings, bold letters, and buttons to Cambria */
+h1, h2, h3, h4, h5, h6, b, strong, button, th,
+.logo, .topbar h1, .sim-title, .card-title, .label, .value,
+nav a, .filter-tab, .inv-badge, .badge, .live-badge, .inv-name {
+  font-family: Cambria, Georgia, serif;
 }
 
 body::before {
@@ -70,8 +78,8 @@ nav a {
   color: #64748b;
   padding: 10px 14px;
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   transition: 0.2s;
 }
 nav a:hover, nav a.active {
@@ -87,7 +95,7 @@ nav a:hover, nav a.active {
   border-radius: 10px;
   padding: 14px;
 }
-.sim-title { font-size: 13px; font-weight: 700; color: #4f46e5; margin-bottom: 6px; }
+.sim-title { font-size: 14px; font-weight: 700; color: #4f46e5; margin-bottom: 6px; }
 
 /* ── MAIN CONTENT ────────────────────────────────────────── */
 .main {
@@ -102,7 +110,7 @@ nav a:hover, nav a.active {
   justify-content: space-between;
   margin-bottom: 24px;
 }
-.topbar h1 { font-size: 24px; font-weight: 800; color: #0f172a; }
+.topbar h1 { font-size: 26px; font-weight: 800; color: #0f172a; }
 
 .live-badge {
   background: #dcfce7;
@@ -110,9 +118,10 @@ nav a:hover, nav a.active {
   border: 1px solid #bbf7d0;
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   animation: pulse 2s infinite;
+  letter-spacing: 0.5px;
 }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
@@ -124,7 +133,7 @@ nav a:hover, nav a.active {
   box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05);
 }
 .card-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #475569;
   margin-bottom: 16px;
@@ -150,7 +159,7 @@ nav a:hover, nav a.active {
   border: 1px solid #cbd5e1;
   background: #ffffff;
   color: #64748b;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   transition: .2s;
@@ -180,8 +189,8 @@ nav a:hover, nav a.active {
   box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05);
 }
 .inv-summary-card .icon { font-size: 28px; }
-.inv-summary-card .label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 600; letter-spacing: .5px; }
-.inv-summary-card .value { font-size: 24px; font-weight: 800; color: #6366f1; }
+.inv-summary-card .label { font-size: 13px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: .5px; }
+.inv-summary-card .value { font-size: 30px; font-weight: 800; color: #6366f1; }
 .inv-summary-card.warn .value { color: #ea580c; }
 .inv-summary-card.crit .value { color: #dc2626; }
 
@@ -226,9 +235,9 @@ nav a:hover, nav a.active {
   margin-bottom: 4px;
 }
 
-.inv-name  { font-size: 18px; font-weight: 800; margin-bottom: 12px; color: #0f172a; }
-.inv-stock { font-size: 32px; font-weight: 800; color: #6366f1; line-height: 1; }
-.inv-stock span { font-size: 14px; color: #94a3b8; font-weight: 500; }
+.inv-name  { font-size: 20px; font-weight: 800; margin-bottom: 12px; color: #0f172a; }
+.inv-stock { font-size: 32px; font-weight: 800; color: #6366f1; line-height: 1; font-family: Cambria, serif; }
+.inv-stock span { font-size: 14px; color: #94a3b8; font-weight: 500; font-family: "Lucida Bright", serif; }
 
 .inv-bar-wrap {
   height: 8px;
@@ -254,7 +263,7 @@ nav a:hover, nav a.active {
   margin-top: 10px;
 }
 .inv-pct   { font-size: 12px; color: #64748b; font-weight: 600; }
-.inv-badge { font-size: 10px; font-weight: 800; padding: 4px 12px; border-radius: 12px; display: inline-block; letter-spacing: 0.5px;}
+.inv-badge { font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 12px; display: inline-block; letter-spacing: 0.5px;}
 .inv-badge.ok       { background: #dcfce7; color: #16a34a; }
 .inv-badge.low      { background: #ffedd5; color: #ea580c; }
 .inv-badge.critical { background: #fee2e2; color: #dc2626; }
@@ -278,7 +287,7 @@ nav a:hover, nav a.active {
   padding: 14px;
   color: #64748b;
   border-bottom: 2px solid #e2e8f0;
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: .5px;
@@ -314,7 +323,7 @@ nav a:hover, nav a.active {
 .badge {
   padding: 4px 12px;
   border-radius: 12px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -416,11 +425,17 @@ nav a:hover, nav a.active {
 </div>
 
 <script>
-// Point directly to the Go Backend
-// This checks if you are running locally or on the web
+/*
+// CHANGE THIS:
 const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://localhost:8080" 
-    : "https://logitwin-api.onrender.com"; // <-- Put your live Go backend URL here later!
+    : "https://logitwin-api.onrender.com"; 
+*/
+
+// TO THIS (Using your actual copied Render link):
+const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    ? "http://localhost:8080" 
+    : "https://logitwin-api-xxxx.onrender.com"; // <-- Paste your real Render link here! (No slash at the end)
 
 let allInventory = [];
 let currentFilter = "all";
@@ -501,16 +516,16 @@ function renderTable(inventory) {
     const fillClass = item.status === "critical" ? "crit" : item.status === "low" ? "warn" : "";
     return `
     <tr>
-      <td style="font-family:monospace;color:#64748b;font-size:12px;font-weight:600;">${item.id}</td>
+      <td style="font-family:monospace;color:#64748b;font-size:13px;font-weight:700;">${item.id}</td>
       <td style="font-weight:700;color:#0f172a;">${item.name}</td>
-      <td style="font-family:monospace;font-weight:600;">${item.stock.toLocaleString()}</td>
-      <td style="font-family:monospace;color:#64748b;">${item.capacity.toLocaleString()}</td>
+      <td style="font-family:monospace;font-weight:700;font-size:14px;">${item.stock.toLocaleString()}</td>
+      <td style="font-family:monospace;color:#64748b;font-size:14px;">${item.capacity.toLocaleString()}</td>
       <td>
         <div class="progress-mini">
           <div class="progress-mini-bar">
             <div class="progress-mini-fill ${fillClass}" style="width:${Math.min(item.pct,100).toFixed(1)}%"></div>
           </div>
-          <span style="font-size:12px;color:#64748b;min-width:38px;font-weight:600;">${item.pct.toFixed(1)}%</span>
+          <span style="font-size:13px;color:#64748b;min-width:38px;font-weight:700;">${item.pct.toFixed(1)}%</span>
         </div>
       </td>
       <td><span class="badge ${item.status}">${item.status}</span></td>
