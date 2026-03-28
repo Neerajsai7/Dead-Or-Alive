@@ -539,5 +539,81 @@ async function clearDisruption() {
 updateDashboard();
 setInterval(updateDashboard, 3000);
 </script>
+<style>
+.chat-btn { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; box-shadow: 0 10px 25px rgba(99,102,241,0.4); z-index: 2000; transition: 0.3s; border: none; }
+.chat-btn:hover { transform: scale(1.08) translateY(-2px); box-shadow: 0 15px 30px rgba(99,102,241,0.5); }
+.chat-window { position: fixed; bottom: 110px; right: 30px; width: 360px; height: 480px; background: white; border-radius: 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; z-index: 2000; overflow: hidden; opacity: 0; pointer-events: none; transform: translateY(20px); transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); font-family: "Lucida Bright", Georgia, serif; border: 1px solid #e2e8f0; }
+.chat-window.show { opacity: 1; pointer-events: all; transform: translateY(0); }
+.chat-header { background: linear-gradient(90deg, #6366f1, #8b5cf6); color: white; padding: 16px 20px; font-family: Cambria, serif; font-weight: bold; font-size: 16px; display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.5px; }
+.close-chat { cursor: pointer; font-size: 20px; opacity: 0.8; transition: 0.2s; }
+.close-chat:hover { opacity: 1; }
+.chat-body { flex: 1; padding: 20px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 14px; }
+.msg { padding: 12px 16px; border-radius: 14px; font-size: 13px; max-width: 85%; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+.msg.bot { background: white; border: 1px solid #e2e8f0; align-self: flex-start; color: #334155; border-bottom-left-radius: 4px; }
+.msg.user { background: #6366f1; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+.chat-input-area { padding: 14px; background: white; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; }
+.chat-input-area input { flex: 1; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 10px; outline: none; font-family: "Lucida Bright", serif; font-size: 13px; transition: border-color 0.2s; }
+.chat-input-area input:focus { border-color: #818cf8; }
+.chat-input-area button { background: #6366f1; color: white; border: none; padding: 0 18px; border-radius: 10px; font-family: Cambria, serif; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.chat-input-area button:hover { background: #4f46e5; }
+</style>
+
+<button class="chat-btn" onclick="toggleChat()">✨</button>
+<div class="chat-window" id="chatWindow">
+  <div class="chat-header">
+    <span>LogiTwin AI Engine</span>
+    <span class="close-chat" onclick="toggleChat()">✖</span>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="msg bot">Hello, Captain! I'm your AI supply chain assistant. Ask me anything about our live vehicles or inventory.</div>
+  </div>
+  <div class="chat-input-area">
+    <input type="text" id="chatInput" placeholder="Ask about the fleet..." onkeypress="handleChatEnter(event)">
+    <button onclick="sendChatMessage()">Send</button>
+  </div>
+</div>
+
+<script>
+function toggleChat() { 
+    document.getElementById('chatWindow').classList.toggle('show'); 
+}
+
+async function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if(!text) return;
+    
+    const body = document.getElementById('chatBody');
+    body.innerHTML += `<div class="msg user">${text}</div>`;
+    input.value = '';
+    body.scrollTop = body.scrollHeight;
+
+    // Loading state
+    const loadingId = 'load-' + Date.now();
+    body.innerHTML += `<div class="msg bot" id="${loadingId}">Analyzing database...</div>`;
+    body.scrollTop = body.scrollHeight;
+
+    try {
+        const res = await fetch(`${API_BASE}/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text })
+        });
+        const data = await res.json();
+        
+        // Remove loading state and add actual response
+        document.getElementById(loadingId).remove();
+        body.innerHTML += `<div class="msg bot">${data.reply || "Error: AI engine offline."}</div>`;
+    } catch (err) {
+        document.getElementById(loadingId).remove();
+        body.innerHTML += `<div class="msg bot" style="color: #dc2626;">⚠️ AI Backend is not connected yet!</div>`;
+    }
+    body.scrollTop = body.scrollHeight;
+}
+
+function handleChatEnter(e) { 
+    if(e.key === 'Enter') sendChatMessage(); 
+}
+</script>
 </body>
 </html>
