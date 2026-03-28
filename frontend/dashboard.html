@@ -16,7 +16,7 @@ body {
   color: #1e293b;
   display: flex;
   min-height: 100vh;
-  /* Glowing orbs background that will show through the glass sidebar */
+  /* Glowing orbs background */
   background:
     radial-gradient(circle at 15% 25%, #60a5fa40, transparent 45%),
     radial-gradient(circle at 85% 70%, #a78bfa40, transparent 45%),
@@ -85,6 +85,28 @@ nav a:hover, nav a.active { background: rgba(255, 255, 255, 0.6); color: #4f46e5
 /* Leaflet Popup Styling Override */
 .leaflet-popup-content-wrapper { border-radius: 8px; font-family: "Lucida Bright", serif; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); }
 .leaflet-popup-content b { font-family: Cambria, serif; color: #1e293b; }
+
+/* =========================================
+   LogiTwin — Glassmorphic Web Chatbot
+   ========================================= */
+.chat-fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4); cursor: pointer; z-index: 9999; transition: transform 0.2s; border: none; outline: none; }
+.chat-fab:hover { transform: scale(1.1); }
+
+.chat-panel { position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; z-index: 9998; opacity: 0; pointer-events: none; transform: translateY(20px); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); overflow: hidden; }
+.chat-panel.active { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+.chat-header { padding: 16px 20px; background: rgba(255, 255, 255, 0.5); border-bottom: 1px solid rgba(226, 232, 240, 0.5); font-family: Cambria, serif; font-weight: 800; color: #1e293b; display: flex; align-items: center; justify-content: space-between; }
+.chat-header span { background: linear-gradient(90deg, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; font-size: 14px; }
+.chat-bubble { padding: 12px 16px; border-radius: 16px; max-width: 85%; line-height: 1.4; word-wrap: break-word; }
+.bubble-ai { background: rgba(255, 255, 255, 0.9); color: #334155; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(226, 232, 240, 0.8); }
+.bubble-user { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2); }
+
+.chat-input-area { padding: 16px; background: rgba(255, 255, 255, 0.5); border-top: 1px solid rgba(226, 232, 240, 0.5); display: flex; gap: 8px; }
+.chat-input-area input { flex: 1; padding: 12px 16px; border-radius: 20px; border: 1px solid rgba(203, 213, 225, 0.8); background: rgba(255, 255, 255, 0.8); outline: none; font-family: "Lucida Bright", serif; font-size: 14px; }
+.chat-input-area button { width: 42px; height: 42px; border-radius: 50%; background: #1e293b; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; }
+.chat-input-area button:hover { background: #6366f1; }
 </style>
 </head>
 <body>
@@ -134,12 +156,30 @@ nav a:hover, nav a.active { background: rgba(255, 255, 255, 0.6); color: #4f46e5
   </div>
 </div>
 
+<button class="chat-fab" onclick="toggleChat()">✨</button>
+
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <div>Logi<span>Twin</span> AI</div>
+    <button onclick="toggleChat()" style="background:none; border:none; cursor:pointer; font-size:16px; color:#94a3b8;">✕</button>
+  </div>
+  <div class="chat-body" id="chatBody">
+    <div class="chat-bubble bubble-ai">
+      Hello! I am the LogiTwin Assistant. I can help you analyze fleet delays, check warehouse capacity, or predict supply chain bottlenecks. What would you like to know?
+    </div>
+  </div>
+  <div class="chat-input-area">
+    <input type="text" id="chatInput" placeholder="Ask about your supply chain..." onkeypress="handleChatKey(event)">
+    <button onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ⚠️ REPLACE THIS WITH YOUR LIVE RENDER URL ONCE DEPLOYED
+// ⚠️ REPLACE THIS WITH YOUR LIVE RENDER URL
 const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://localhost:8080" 
-    : "https://logitwin-api.onrender.com"; 
+    : "https://logitwin-api.onrender.com"; // <-- Update this!
 
 // Initialize Map centered on India
 const map = L.map('map').setView([20.5937, 78.9629], 5);
@@ -222,6 +262,35 @@ async function fetchMapData() {
     } catch (err) {
         console.error("Map data fetch error:", err);
     }
+}
+
+// Chatbot Logic
+function toggleChat() {
+    document.getElementById('chatPanel').classList.toggle('active');
+}
+
+function handleChatKey(event) {
+    if (event.key === 'Enter') sendMessage();
+}
+
+function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    const chatBody = document.getElementById('chatBody');
+    
+    // Add User Message
+    chatBody.insertAdjacentHTML('beforeend', `<div class="chat-bubble bubble-user">${msg}</div>`);
+    input.value = '';
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    // Simulate AI Delay & Response
+    setTimeout(() => {
+      const mockResponse = "I'm currently running in Demo Mode! To connect me to live data, you'll need to link an LLM API key to the Render backend. For now, I can tell you that the Chennai Port is showing a high probability of disruption based on current simulated weather data.";
+      chatBody.insertAdjacentHTML('beforeend', `<div class="chat-bubble bubble-ai"><b>AI:</b> ${mockResponse}</div>`);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }, 1000);
 }
 
 // Initial load and polling loop
