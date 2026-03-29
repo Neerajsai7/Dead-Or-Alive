@@ -6,13 +6,10 @@
 <title>LogiTwin — Live Dashboard</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-/* ============================================================
-   LogiTwin — Global Styles (Light Theme + Glassmorphism)
-   ============================================================ */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: "Lucida Bright", Georgia, serif; 
+  font-family: "Lucida Bright", Georgia, serif;
   color: #1e293b;
   display: flex;
   min-height: 100vh;
@@ -30,63 +27,64 @@ h1, h2, h3, h4, h5, h6, b, strong, button, th, select,
 
 body::before {
   content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background-image: linear-gradient(#cbd5e166 1px, transparent 1px), linear-gradient(90deg, #cbd5e166 1px, transparent 1px);
+  background-image: linear-gradient(#cbd5e166 1px, transparent 1px),
+                    linear-gradient(90deg, #cbd5e166 1px, transparent 1px);
   background-size: 60px 60px; z-index: -1;
 }
 
-/* 🧊 Glassmorphism Sidebar */
-.sidebar { width: 220px; min-height: 100vh; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-right: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 4px 0 30px rgba(99, 102, 241, 0.1); display: flex; flex-direction: column; padding: 24px 16px; position: fixed; top: 0; left: 0; bottom: 0; z-index: 1000; }
+.sidebar {
+  width: 220px; min-height: 100vh;
+  background: rgba(255,255,255,0.4);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid rgba(255,255,255,0.8);
+  box-shadow: 4px 0 30px rgba(99,102,241,0.1);
+  display: flex; flex-direction: column; padding: 24px 16px;
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 1000;
+}
 .logo { font-size: 26px; font-weight: 900; color: #1e293b; margin-bottom: 36px; letter-spacing: 1px; }
-.logo span { background: linear-gradient(90deg, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.logo span { background: linear-gradient(90deg,#a855f7,#6366f1); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 nav { display: flex; flex-direction: column; gap: 8px; }
 nav a { text-decoration: none; color: #64748b; padding: 10px 14px; border-radius: 8px; font-size: 15px; font-weight: 600; transition: 0.2s; }
-nav a:hover, nav a.active { background: rgba(255, 255, 255, 0.6); color: #4f46e5; font-weight: 700; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+nav a:hover, nav a.active { background: rgba(255,255,255,0.6); color: #4f46e5; font-weight: 700; }
 
 .main { margin-left: 220px; flex: 1; padding: 24px 32px; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-shrink: 0; }
 .topbar h1 { font-size: 26px; font-weight: 800; color: #0f172a; }
 .live-badge { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; animation: pulse 2s infinite; letter-spacing: 0.5px; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
 
-/* Stats Grid */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px; flex-shrink: 0; }
-.stat-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 14px; padding: 20px; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05); }
+.stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; margin-bottom: 24px; flex-shrink: 0; }
+.stat-card { background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.9); border-radius: 14px; padding: 20px; box-shadow: 0 10px 30px rgba(99,102,241,0.05); }
 .stat-title { font-size: 13px; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
 .stat-value { font-size: 28px; font-weight: 800; color: #1e293b; }
 .stat-sub { font-size: 12px; color: #94a3b8; font-weight: 600; margin-top: 4px; }
 
-/* Map & Simulator */
-.map-container { flex: 1; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05); position: relative; }
+.map-container { flex: 1; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 30px rgba(99,102,241,0.05); position: relative; min-height: 0; }
 #map { width: 100%; height: 100%; z-index: 1; }
 
-.simulator-panel { position: absolute; top: 20px; right: 20px; z-index: 400; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.9); padding: 16px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 280px; }
+.simulator-panel { position: absolute; top: 20px; right: 20px; z-index: 400; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.9); padding: 16px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 280px; }
 .simulator-panel h3 { font-size: 15px; margin-bottom: 12px; color: #1e293b; }
-.simulator-panel select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 12px; outline: none; }
+.simulator-panel select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 12px; outline: none; font-family: inherit; }
 .sim-btns { display: flex; gap: 8px; }
-.sim-btns button { flex: 1; padding: 8px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s; color: white; }
-.btn-disrupt { background: #ef4444; }
-.btn-disrupt:hover { background: #dc2626; }
-.btn-clear { background: #10b981; }
-.btn-clear:hover { background: #059669; }
+.sim-btns button { flex: 1; padding: 8px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; transition: 0.2s; color: white; font-family: inherit; }
+.btn-disrupt { background: #ef4444; } .btn-disrupt:hover { background: #dc2626; }
+.btn-clear   { background: #10b981; } .btn-clear:hover   { background: #059669; }
 
-/* Custom Map Markers */
-.vehicle-marker { background: #4f46e5; border: 2px solid white; border-radius: 50%; box-shadow: 0 0 10px rgba(79, 70, 229, 0.6); }
-.vehicle-delayed { background: #ea580c; box-shadow: 0 0 10px rgba(234, 88, 12, 0.6); }
-.node-active { border: 3px solid #10b981; background: rgba(16, 185, 129, 0.2); border-radius: 50%; }
-.node-disrupted { border: 3px solid #ef4444; background: rgba(239, 68, 68, 0.3); border-radius: 50%; animation: blink 1s infinite; }
-@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.node-active    { border: 3px solid #10b981; background: rgba(16,185,129,0.2); border-radius: 50%; }
+.node-disrupted { border: 3px solid #ef4444; background: rgba(239,68,68,0.3); border-radius: 50%; animation: blink 1s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-/* Chatbot */
-.chat-fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4); cursor: pointer; z-index: 9999; border: none; }
-.chat-panel { position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; z-index: 9998; opacity: 0; pointer-events: none; transform: translateY(20px); transition: all 0.3s ease; }
+.chat-fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg,#6366f1,#a855f7); color: white; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(99,102,241,0.4); cursor: pointer; z-index: 9999; border: none; }
+.chat-panel { position: fixed; bottom: 100px; right: 30px; width: 350px; height: 500px; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.9); border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); display: flex; flex-direction: column; z-index: 9998; opacity: 0; pointer-events: none; transform: translateY(20px); transition: all 0.3s ease; }
 .chat-panel.active { opacity: 1; pointer-events: all; transform: translateY(0); }
-.chat-header { padding: 16px 20px; background: rgba(255, 255, 255, 0.5); border-bottom: 1px solid rgba(226, 232, 240, 0.5); font-weight: 800; display: flex; justify-content: space-between; }
+.chat-header { padding: 16px 20px; background: rgba(255,255,255,0.5); border-bottom: 1px solid rgba(226,232,240,0.5); font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
 .chat-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; font-size: 14px; }
 .chat-bubble { padding: 12px 16px; border-radius: 16px; max-width: 85%; line-height: 1.4; }
-.bubble-ai { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(226, 232, 240, 0.8); align-self: flex-start; border-bottom-left-radius: 4px; }
-.bubble-user { background: linear-gradient(135deg, #6366f1, #a855f7); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-.chat-input-area { padding: 16px; display: flex; gap: 8px; border-top: 1px solid rgba(226, 232, 240, 0.5); }
-.chat-input-area input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #cbd5e1; outline: none; }
-.chat-input-area button { width: 42px; border-radius: 50%; background: #1e293b; color: white; border: none; cursor: pointer; }
+.bubble-ai   { background: rgba(255,255,255,0.9); border: 1px solid rgba(226,232,240,0.8); align-self: flex-start; border-bottom-left-radius: 4px; }
+.bubble-user { background: linear-gradient(135deg,#6366f1,#a855f7); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+.chat-input-area { padding: 16px; display: flex; gap: 8px; border-top: 1px solid rgba(226,232,240,0.5); }
+.chat-input-area input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #cbd5e1; outline: none; font-family: inherit; }
+.chat-input-area button { width: 42px; height: 42px; border-radius: 50%; background: #1e293b; color: white; border: none; cursor: pointer; font-size: 16px; }
 </style>
 </head>
 <body>
@@ -126,7 +124,7 @@ nav a:hover, nav a.active { background: rgba(255, 255, 255, 0.6); color: #4f46e5
     </div>
     <div class="stat-card">
       <div class="stat-title">Network Disruptions</div>
-      <div class="stat-value" id="stat-disrupt" style="color: #ef4444;">--</div>
+      <div class="stat-value" id="stat-disrupt" style="color:#ef4444;">--</div>
       <div class="stat-sub">Nodes requiring attention</div>
     </div>
   </div>
@@ -144,7 +142,7 @@ nav a:hover, nav a.active { background: rgba(255, 255, 255, 0.6); color: #4f46e5
       </select>
       <div class="sim-btns">
         <button class="btn-disrupt" onclick="triggerSim('disrupt')">Disrupt Node</button>
-        <button class="btn-clear" onclick="triggerSim('clear')">Clear</button>
+        <button class="btn-clear"   onclick="triggerSim('clear')">Clear</button>
       </div>
     </div>
     <div id="map"></div>
@@ -154,8 +152,8 @@ nav a:hover, nav a.active { background: rgba(255, 255, 255, 0.6); color: #4f46e5
 <button class="chat-fab" onclick="toggleChat()">✨</button>
 <div class="chat-panel" id="chatPanel">
   <div class="chat-header">
-    <div>Logi<span>Twin</span> AI</div>
-    <button onclick="toggleChat()" style="background:none; border:none; cursor:pointer;">✕</button>
+    <div>Logi<span style="background:linear-gradient(90deg,#a855f7,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Twin</span> AI</div>
+    <button onclick="toggleChat()" style="background:none;border:none;cursor:pointer;font-size:16px;">✕</button>
   </div>
   <div class="chat-body" id="chatBody">
     <div class="chat-bubble bubble-ai">Hello! I am the LogiTwin Assistant. What would you like to know about the current network status?</div>
@@ -166,147 +164,209 @@ nav a:hover, nav a.active { background: rgba(255, 255, 255, 0.6); color: #4f46e5
   </div>
 </div>
 
+<!-- Leaflet must load before our script -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ⚠️ REPLACE THIS WITH YOUR RENDER URL
+// ============================================================
+//  CONFIG
+// ============================================================
 const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-    ? "http://localhost:8080" 
-    : "https://logitwin-api.onrender.com"; // <-- Ensure this points to your live backend!
+  ? "http://localhost:8080"
+  : "https://logitwin-api.onrender.com";
 
-const map = L.map('map').setView([20.5937, 78.9629], 5);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 20 }).addTo(map);
+// ============================================================
+//  MAP  (map.js inlined — no external file needed)
+// ============================================================
+const map = L.map('map', { center: [20.5937, 78.9629], zoom: 5 });
 
-let nodeLayer = L.layerGroup().addTo(map);
-let routeLayer = L.layerGroup().addTo(map); // RESTORED ROUTES
-let vehicleLayer = L.layerGroup().addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap © CartoDB',
+  subdomains: 'abcd',
+  maxZoom: 19
+}).addTo(map);
 
-// DISRUPTION SIMULATOR LOGIC
-async function triggerSim(action) {
-    const nodeId = document.getElementById('simNodeSelect').value;
-    const endpoint = action === 'disrupt' ? '/disrupt' : '/disrupt/clear';
-    try {
-        await fetch(API_BASE + endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ node_id: nodeId })
-        });
-        fetchMapData(); // Instantly refresh map
-    } catch (e) { console.error("Sim error:", e); }
+const nodeLayer    = L.layerGroup().addTo(map);
+const routeLayer   = L.layerGroup().addTo(map);
+const vehicleLayer = L.layerGroup().addTo(map);
+
+const prevPositions  = {};   // { vehicleId: { lat, lng, heading } }
+const nodeMarkers    = {};
+const vehicleMarkers = {};
+
+// Compass bearing in degrees (0 = North, 90 = East)
+function bearingDeg(lat1, lng1, lat2, lng2) {
+  const r  = d => d * Math.PI / 180;
+  const dL = r(lng2 - lng1);
+  const p1 = r(lat1), p2 = r(lat2);
+  const y  = Math.sin(dL) * Math.cos(p2);
+  const x  = Math.cos(p1) * Math.sin(p2) - Math.sin(p1) * Math.cos(p2) * Math.cos(dL);
+  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
 }
 
+// Build a rotated vehicle icon
+//   in-transit  → trucks.png  (image faces RIGHT → correct by -90°)
+//   delayed/idle → aero.png   (image faces UP    → no correction)
+function buildVehicleIcon(v, heading) {
+  const onRoute    = v.status === 'in-transit';
+  const imgSrc     = onRoute ? 'trucks.png' : 'aero.png';
+  const correction = onRoute ? -90 : 0;
+  const rotate     = heading + correction;
+  const size       = onRoute ? 52 : 40;
+  const half       = size / 2;
+
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+        width:${size}px;height:${size}px;
+        transform:rotate(${rotate}deg);
+        transform-origin:center;
+        filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+      "><img src="${imgSrc}" style="width:100%;height:100%;object-fit:contain;"/></div>`,
+    iconSize:   [size, size],
+    iconAnchor: [half, half]
+  });
+}
+
+function updateMap(nodes, vehicles, routes) {
+
+  // --- node lookup for routes ---
+  const nodeLookup = {};
+  nodes.forEach(n => { nodeLookup[n.id] = n; });
+
+  // 1. Routes
+  routeLayer.clearLayers();
+  routes.forEach(rt => {
+    const f = nodeLookup[rt.from], t = nodeLookup[rt.to];
+    if (!f || !t) return;
+    const d = rt.status === 'disrupted';
+    L.polyline([[f.lat, f.lng],[t.lat, t.lng]], {
+      color: d ? '#ef4444' : '#94a3b8', weight: d ? 3 : 2,
+      opacity: 0.65, dashArray: d ? '6,10' : null
+    }).addTo(routeLayer);
+  });
+
+  // 2. Nodes
+  nodes.forEach(node => {
+    const d     = node.status === 'disrupted';
+    const color = d ? '#ef4444' : '#10b981';
+    const pct   = ((node.stock / node.capacity) * 100).toFixed(0);
+    const icon  = L.divIcon({
+      className: '',
+      html: `<div style="background:${color};border:2px solid #fff;border-radius:50%;width:16px;height:16px;box-shadow:0 0 8px ${color};"></div>`,
+      iconSize: [16,16], iconAnchor: [8,8]
+    });
+    const popup = `<div style="color:#0f172a;min-width:160px"><b>${node.name}</b><br>Type: ${node.type}<br>Status: <b style="color:${color}">${node.status}</b><br>Stock: ${node.stock}/${node.capacity} (${pct}%)</div>`;
+    if (nodeMarkers[node.id]) {
+      nodeMarkers[node.id].setIcon(icon);
+      nodeMarkers[node.id].getPopup().setContent(popup);
+    } else {
+      nodeMarkers[node.id] = L.marker([node.lat, node.lng], { icon }).addTo(nodeLayer).bindPopup(popup);
+    }
+  });
+
+  // 3. Vehicles
+  vehicles.forEach(v => {
+    const lat = v.lat, lng = v.lng;
+    let heading = 90;
+    const prev  = prevPositions[v.id];
+    if (prev) {
+      const moved = Math.abs(lat - prev.lat) + Math.abs(lng - prev.lng);
+      heading = moved > 0.0001 ? bearingDeg(prev.lat, prev.lng, lat, lng) : (prev.heading || 90);
+    }
+    prevPositions[v.id] = { lat, lng, heading };
+
+    const icon  = buildVehicleIcon(v, heading);
+    const popup = `<div style="color:#0f172a;min-width:140px"><b>${v.id}</b><br>Type: ${v.type}<br>Status: <b>${v.status}</b><br>Load: ${v.load}%<br>ETA: ${v.eta}<br>Progress: ${(v.progress * 100).toFixed(0)}%</div>`;
+
+    if (vehicleMarkers[v.id]) {
+      vehicleMarkers[v.id].setLatLng([lat, lng]);
+      vehicleMarkers[v.id].setIcon(icon);
+      vehicleMarkers[v.id].getPopup().setContent(popup);
+    } else {
+      vehicleMarkers[v.id] = L.marker([lat, lng], { icon }).addTo(vehicleLayer).bindPopup(popup);
+    }
+  });
+}
+
+// ============================================================
+//  STATS + DATA FETCHING
+// ============================================================
 async function fetchHealthStats() {
-    try {
-        const res = await fetch(`${API_BASE}/health`);
-        if (!res.ok) return;
-        const data = await res.json();
-        document.getElementById('stat-active').innerText = data.activeVehicles || 0;
-        document.getElementById('stat-total-veh').innerText = `Out of ${data.totalVehicles || 0} total fleet`;
-        document.getElementById('stat-ontime').innerText = `${(data.onTimeRate || 0).toFixed(1)}%`;
-        document.getElementById('stat-delayed').innerText = `${data.delayedVehicles || 0} vehicles delayed`;
-        document.getElementById('stat-inv').innerText = `${(data.inventoryHealth || 0).toFixed(1)}%`;
-        document.getElementById('stat-disrupt').innerText = data.disruptions || 0;
-    } catch (err) {}
+  try {
+    const res = await fetch(`${API_BASE}/health`);
+    if (!res.ok) return;
+    const d = await res.json();
+    document.getElementById('stat-active').innerText    = d.activeVehicles    ?? '--';
+    document.getElementById('stat-total-veh').innerText = `Out of ${d.totalVehicles ?? '--'} total fleet`;
+    document.getElementById('stat-ontime').innerText    = `${(d.onTimeRate ?? 0).toFixed(1)}%`;
+    document.getElementById('stat-delayed').innerText   = `${d.delayedVehicles ?? '--'} vehicles delayed`;
+    document.getElementById('stat-inv').innerText       = `${(d.inventoryHealth ?? 0).toFixed(1)}%`;
+    document.getElementById('stat-disrupt').innerText   = d.disruptions ?? '--';
+  } catch (_) {}
 }
 
 async function fetchMapData() {
-    try {
-        const [nodesRes, routesRes, vehiclesRes] = await Promise.all([
-            fetch(`${API_BASE}/nodes`),
-            fetch(`${API_BASE}/routes`), // RESTORED ROUTES FETCH
-            fetch(`${API_BASE}/vehicles`)
-        ]);
-
-        let nodeLookup = {};
-
-        // 1. Draw Nodes
-        if (nodesRes.ok) {
-            const nodes = await nodesRes.json();
-            nodeLayer.clearLayers();
-            nodes.forEach(n => {
-                nodeLookup[n.id] = [n.lat, n.lng]; // Save for routing
-                const isDisrupted = n.status === 'disrupted';
-                const marker = L.circleMarker([n.lat, n.lng], {
-                    radius: 12,
-                    className: isDisrupted ? 'node-disrupted' : 'node-active',
-                    color: isDisrupted ? '#ef4444' : '#10b981',
-                    fillOpacity: 0.2
-                }).bindPopup(`<b>${n.name}</b><br>Stock: ${n.stock}/${n.capacity}<br>Status: ${n.status}`);
-                nodeLayer.addLayer(marker);
-            });
-        }
-
-        // 2. Draw Routes (Connecting Lines)
-        if (routesRes.ok) {
-            const routes = await routesRes.json();
-            routeLayer.clearLayers();
-            routes.forEach(r => {
-                const start = nodeLookup[r.from];
-                const end = nodeLookup[r.to];
-                if (start && end) {
-                    const isDisrupted = r.status === 'disrupted';
-                    const line = L.polyline([start, end], {
-                        color: isDisrupted ? '#ef4444' : '#94a3b8',
-                        weight: isDisrupted ? 3 : 2,
-                        dashArray: isDisrupted ? '5, 10' : 'none',
-                        opacity: 0.6
-                    });
-                    routeLayer.addLayer(line);
-                }
-            });
-        }
-
-        // 3. Draw Vehicles
-        if (vehiclesRes.ok) {
-            const vehicles = await vehiclesRes.json();
-            vehicleLayer.clearLayers();
-            vehicles.forEach(v => {
-                const icon = L.divIcon({ className: v.status === 'delayed' ? 'vehicle-marker vehicle-delayed' : 'vehicle-marker', iconSize: [14, 14] });
-                L.marker([v.lat, v.lng], { icon: icon }).bindPopup(`<b>Unit: ${v.id}</b><br>Load: ${v.load}%<br>Status: ${v.status}`).addTo(vehicleLayer);
-            });
-        }
-    } catch (err) {}
+  try {
+    const [nr, rr, vr] = await Promise.all([
+      fetch(`${API_BASE}/nodes`),
+      fetch(`${API_BASE}/routes`),
+      fetch(`${API_BASE}/vehicles`)
+    ]);
+    const nodes    = nr.ok ? await nr.json() : [];
+    const routes   = rr.ok ? await rr.json() : [];
+    const vehicles = vr.ok ? await vr.json() : [];
+    updateMap(nodes, vehicles, routes);
+  } catch (err) { console.error("Map fetch error:", err); }
 }
 
-// 🤖 REAL AI CHATBOT LOGIC
+// ============================================================
+//  DISRUPTION SIMULATOR
+// ============================================================
+async function triggerSim(action) {
+  const nodeId   = document.getElementById('simNodeSelect').value;
+  const endpoint = action === 'disrupt' ? '/disrupt' : '/disrupt/clear';
+  try {
+    await fetch(API_BASE + endpoint, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ node_id: nodeId })
+    });
+    fetchMapData();
+  } catch (e) { console.error("Sim error:", e); }
+}
+
+// ============================================================
+//  CHATBOT
+// ============================================================
 function toggleChat() { document.getElementById('chatPanel').classList.toggle('active'); }
 function handleChatKey(e) { if (e.key === 'Enter') sendMessage(); }
 
 async function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    const chatBody = document.getElementById('chatBody');
-    
-    // 1. Add User Message to UI
-    chatBody.insertAdjacentHTML('beforeend', `<div class="chat-bubble bubble-user">${msg}</div>`);
-    input.value = '';
-    chatBody.scrollTop = chatBody.scrollHeight;
-
-    // 2. Add temporary "Thinking..." bubble
-    const thinkingId = 'think-' + Date.now();
-    chatBody.insertAdjacentHTML('beforeend', `<div id="${thinkingId}" class="chat-bubble bubble-ai"><i>Analyzing logistics data...</i></div>`);
-    chatBody.scrollTop = chatBody.scrollHeight;
-
-    try {
-        // 3. Send to your live Go API
-        const response = await fetch(`${API_BASE}/api/chat`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: msg })
-        });
-        
-        const data = await response.json();
-        
-        // 4. Replace "Thinking" with actual AI reply
-        document.getElementById(thinkingId).innerHTML = `<b>AI:</b> ${data.reply}`;
-    } catch (error) {
-        document.getElementById(thinkingId).innerHTML = `<b>AI:</b> System offline. Could not connect to the API.`;
-    }
-    
-    chatBody.scrollTop = chatBody.scrollHeight;
+  const input = document.getElementById('chatInput');
+  const msg   = input.value.trim();
+  if (!msg) return;
+  const chatBody = document.getElementById('chatBody');
+  chatBody.insertAdjacentHTML('beforeend', `<div class="chat-bubble bubble-user">${msg}</div>`);
+  input.value = '';
+  chatBody.scrollTop = chatBody.scrollHeight;
+  const tid = 'think-' + Date.now();
+  chatBody.insertAdjacentHTML('beforeend', `<div id="${tid}" class="chat-bubble bubble-ai"><i>Analyzing logistics data...</i></div>`);
+  chatBody.scrollTop = chatBody.scrollHeight;
+  try {
+    const res  = await fetch(`${API_BASE}/api/chat`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg })
+    });
+    const data = await res.json();
+    document.getElementById(tid).innerHTML = `<b>AI:</b> ${data.reply}`;
+  } catch (_) {
+    document.getElementById(tid).innerHTML = `<b>AI:</b> System offline. Could not connect to the API.`;
+  }
+  chatBody.scrollTop = chatBody.scrollHeight;
 }
 
+// ============================================================
+//  BOOT
+// ============================================================
 fetchHealthStats();
 fetchMapData();
 setInterval(() => { fetchHealthStats(); fetchMapData(); }, 3000);
